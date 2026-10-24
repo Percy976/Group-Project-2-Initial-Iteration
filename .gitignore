@@ -1,0 +1,14 @@
+# IDE settings
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+nbproject/private/
+
+# Maven build output
+target/
+
+# Local environment
+.env
+*.log
