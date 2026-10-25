@@ -1,14 +1,72 @@
-# IDE settings
+# ==========================================
+# Build output
+# ==========================================
+
+# Maven
+target/
+
+# Other Java build output
+build/
+out/
+
+# ==========================================
+# IDE-specific files
+# ==========================================
+
+# IntelliJ IDEA
 .idea/
 *.iml
+
+# Eclipse
 .project
 .classpath
 .settings/
+
+# NetBeans
 nbproject/private/
+nbbuild/
+dist/
+nbdist/
 
-# Maven build output
-target/
+# VS Code
+.vscode/
 
-# Local environment
+# ==========================================
+# Local configuration and sensitive files
+# ==========================================
+
 .env
+.env.*
+!.env.example
+
+# Local-only configuration
+*.properties.local
+
+# ==========================================
+# Logs and temporary files
+# ==========================================
+
 *.log
+*.tmp
+*.swp
+*~
+
+# ==========================================
+# Operating system files
+# ==========================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# ==========================================
+# Local database files (HyperSQL)
+# ==========================================
+
+*.lck
+*.data
+*.backup
