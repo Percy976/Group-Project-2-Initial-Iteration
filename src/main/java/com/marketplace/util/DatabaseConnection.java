@@ -11,7 +11,7 @@ public class DatabaseConnection {
 
     private static final String USER = "root"; 
 
-    private static final String PASSWORD = "Hidden for security reasons";
+    private static final String PASSWORD = System.getenv("MARKETPLACE_DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
         try {
