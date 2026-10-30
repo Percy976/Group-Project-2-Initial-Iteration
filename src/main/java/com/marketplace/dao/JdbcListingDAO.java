@@ -94,4 +94,45 @@ public class JdbcListingDAO {
 
         return listings;
     }
+
+
+    public ServiceListing findById(int listingId) throws SQLException {
+
+        String sql = """
+            SELECT l.listing_id, l.provider_id, l.title,
+                   l.description, l.price,
+                   CONCAT_WS(' ', u.first_name, u.last_name)
+                       AS provider_name
+            FROM listings l
+            JOIN users u ON l.provider_id = u.user_id
+            WHERE l.listing_id = ?
+              AND l.status = 'ACTIVE'
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, listingId);
+
+            try (ResultSet results = statement.executeQuery()) {
+
+                if (results.next()) {
+                    ServiceListing listing = new ServiceListing();
+
+                    listing.setListingId(results.getInt("listing_id"));
+                    listing.setProviderId(results.getInt("provider_id"));
+                    listing.setProviderName(results.getString("provider_name"));
+                    listing.setServiceName(results.getString("title"));
+                    listing.setDescription(results.getString("description"));
+                    listing.setPrice(results.getBigDecimal("price"));
+                    listing.setActive(true);
+
+                    return listing;
+                }
+            }
+        }
+
+        return null;
+    }
+
 }

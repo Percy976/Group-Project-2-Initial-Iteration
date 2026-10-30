@@ -1,0 +1,30 @@
+/* Individual service details page */
+.listing-details {
+    max-width: 800px;
+    margin: 48px auto 80px;
+    padding: 32px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.listing-details h1 { margin: 24px 0 12px; }
+.listing-details h2 { margin-top: 32px; margin-bottom: 12px; }
+
+.listing-details .description {
+    color: #69727b;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+.listing-details .provider {
+    color: #53606d;
+    font-size: 13px;
+    margin-bottom: 32px;
+}
+
+.listing-details .btn { margin-top: 24px; }
+
+@media (max-width: 600px) {
+    .listing-details { margin: 24px auto 48px; padding: 20px; }
+}

@@ -36,6 +36,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Services Marketplace</title>
     <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/common.css">
+
+    <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/service-listings.css">
 </head>
 <body>
@@ -131,7 +134,8 @@
                     <% } %>
                 </strong>
 
-                <a href="#" class="btn btn-primary">
+                <a href="${pageContext.request.contextPath}/listing?id=<%= listing.getListingId() %>"
+                   class="btn btn-primary">
                     View Details
                 </a>
 
