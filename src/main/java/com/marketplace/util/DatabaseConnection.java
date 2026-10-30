@@ -9,7 +9,7 @@ public class DatabaseConnection {
     private static final String URL =
             "jdbc:mysql://localhost:3306/local_services_marketplace";
 
-    private static final String USER = "root"; 
+    private static final String USER = "marketplace";
 
     private static final String PASSWORD = System.getenv("MARKETPLACE_DB_PASSWORD");
 
