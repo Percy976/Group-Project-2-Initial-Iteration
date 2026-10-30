@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/listings")
+@WebServlet(urlPatterns = {"", "/listings"})
 public class ListingsServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;

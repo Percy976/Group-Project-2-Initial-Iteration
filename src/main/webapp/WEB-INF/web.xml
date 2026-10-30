@@ -7,8 +7,4 @@
 
     <display-name>Local Services Marketplace</display-name>
 
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
-
 </web-app>

@@ -42,12 +42,11 @@
 
 <header class="navbar">
     <div class="container nav-content">
-        <a href="#" class="brand">Local Services</a>
+        <a href="${pageContext.request.contextPath}/" class="brand">
+            Local Services
+        </a>
 
         <nav>
-            <a href="${pageContext.request.contextPath}/listings">
-                Browse Services
-            </a>
             <a href="#">Log In</a>
             <a href="#" class="btn btn-outline">Sign Up</a>
         </nav>
