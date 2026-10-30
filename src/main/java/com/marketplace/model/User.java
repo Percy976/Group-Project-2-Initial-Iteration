@@ -1,13 +1,12 @@
 package com.marketplace.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Represents a registered marketplace user.
- *
- * Supports account identity and contact information.
  * A user can act as both a customer and a service provider.
- * Password credentials are handled separately by the authentication layer.
+ * Password credentials are handled separately.
  *
  * Related requirements: PR0001, PR0002, PR0005, PR0006.
  */
@@ -16,21 +15,31 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int userId;
-    private String name;
+    private String username;
     private String email;
+    private String firstName;
+    private String lastName;
     private String phoneNumber;
-    private String address;
+    private String bio;
+    private boolean admin;
+    private LocalDateTime createdAt;
 
     public User() {
     }
 
-    public User(int userId, String name, String email,
-                String phoneNumber, String address) {
+    public User(int userId, String username, String email,
+                String firstName, String lastName,
+                String phoneNumber, String bio,
+                boolean admin, LocalDateTime createdAt) {
         this.userId = userId;
-        this.name = name;
+        this.username = username;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.address = address;
+        this.bio = bio;
+        this.admin = admin;
+        this.createdAt = createdAt;
     }
 
     public int getUserId() {
@@ -41,12 +50,12 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -57,6 +66,28 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getName() {
+        String first = firstName == null ? "" : firstName;
+        String last = lastName == null ? "" : lastName;
+        return (first + " " + last).trim();
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -65,11 +96,27 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAddress() {
-        return address;
+    public String getBio() {
+        return bio;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
