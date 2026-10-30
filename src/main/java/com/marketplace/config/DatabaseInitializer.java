@@ -34,7 +34,7 @@ public class DatabaseInitializer {
                 executeSqlFile(connection, "db/database_setup.sql");
 
                 // Then create the demo provider and 50 listings
-                executeSqlFile(connection, "db/marketplace_seed_50_listings.sql");
+                executeSqlFile(connection, "db/marketplace_seed_listings.sql");
 
                 System.out.println(
                         "Database initialization completed successfully."

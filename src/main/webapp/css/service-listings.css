@@ -127,29 +127,6 @@ nav a {
     color: #69727b;
 }
 
-.categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 25px 0;
-}
-
-.category {
-    padding: 9px 16px;
-    border: 1px solid #d8dde2;
-    border-radius: 20px;
-    background: white;
-    color: #45505a;
-    cursor: pointer;
-}
-
-.category.active,
-.category:hover {
-    background: #176345;
-    border-color: #176345;
-    color: white;
-}
-
 /* Service cards */
 
 .listing-grid {
@@ -168,26 +145,11 @@ nav a {
     flex-direction: column;
 }
 
-.listing-image {
-    height: 140px;
-    background: #e1eee6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 52px;
-}
-
 .listing-body {
     padding: 20px;
     display: flex;
     flex-direction: column;
     flex: 1;
-}
-
-.listing-category {
-    color: #176345;
-    font-size: 12px;
-    font-weight: bold;
 }
 
 .listing-body h3 {

@@ -24,6 +24,7 @@ public class ServiceListing implements Serializable {
     private boolean active;
     private double averageRating;
     private int reviewCount;
+    private String providerName;
 
     public ServiceListing() {
         this.price = BigDecimal.ZERO;
@@ -113,5 +114,13 @@ public class ServiceListing implements Serializable {
 
     public void setReviewCount(int reviewCount) {
         this.reviewCount = reviewCount;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 }
