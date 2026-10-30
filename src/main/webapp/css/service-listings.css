@@ -1,0 +1,269 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #252b33;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Navigation */
+
+.navbar {
+    background: white;
+    border-bottom: 1px solid #e2e5e9;
+}
+
+.nav-content {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: bold;
+    color: #176345;
+    text-decoration: none;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+nav a {
+    color: #38424c;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* Buttons */
+
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: #176345;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #104b34;
+}
+
+.btn-outline {
+    border: 1px solid #176345;
+    color: #176345;
+}
+
+/* Hero / Search */
+
+.hero {
+    background: #e6f1e9;
+    padding: 65px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin: 0 0 12px;
+}
+
+.hero p {
+    color: #53645c;
+    margin-bottom: 28px;
+}
+
+.search-form {
+    display: flex;
+    max-width: 650px;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #ccd7d0;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+/* Browse section */
+
+.browse-header {
+    margin-top: 45px;
+}
+
+.browse-header h2 {
+    margin-bottom: 5px;
+    font-size: 26px;
+}
+
+.browse-header p {
+    margin-top: 0;
+    color: #69727b;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.category {
+    padding: 9px 16px;
+    border: 1px solid #d8dde2;
+    border-radius: 20px;
+    background: white;
+    color: #45505a;
+    cursor: pointer;
+}
+
+.category.active,
+.category:hover {
+    background: #176345;
+    border-color: #176345;
+    color: white;
+}
+
+/* Service cards */
+
+.listing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.listing-card {
+    background: white;
+    border: 1px solid #e2e5e9;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.listing-image {
+    height: 140px;
+    background: #e1eee6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+}
+
+.listing-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.listing-category {
+    color: #176345;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.listing-body h3 {
+    margin: 8px 0;
+    font-size: 18px;
+}
+
+.description {
+    color: #69727b;
+    font-size: 14px;
+    flex: 1;
+}
+
+.provider {
+    color: #53606d;
+    font-size: 13px;
+}
+
+.listing-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #edf0f2;
+}
+
+.listing-footer strong {
+    font-size: 16px;
+}
+
+/* Footer */
+
+footer {
+    background: #202d27;
+    color: #dce8e0;
+    text-align: center;
+    padding: 25px;
+    font-size: 13px;
+}
+
+/* Responsive layout */
+
+@media (max-width: 900px) {
+    .listing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .nav-content {
+        flex-direction: column;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .hero {
+        padding: 40px 0;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .listing-grid {
+        grid-template-columns: 1fr;
+    }
+}
