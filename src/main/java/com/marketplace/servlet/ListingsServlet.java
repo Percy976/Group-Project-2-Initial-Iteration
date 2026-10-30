@@ -27,14 +27,37 @@ public class ListingsServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        int page = 0;
+        String searchQuery = request.getParameter("q");
 
-        // Read the requested page number, if provided.
+        if (searchQuery == null) {
+            searchQuery = "";
+        }
+
+        searchQuery = searchQuery.trim();
+
+        if (searchQuery.length() > 100) {
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Search query is too long."
+            );
+            return;
+        }
+
+        int page = 0;
         String pageParameter = request.getParameter("page");
 
         if (pageParameter != null) {
             try {
-                page = Math.max(0, Integer.parseInt(pageParameter));
+                page = Integer.parseInt(pageParameter);
+
+                if (page < 0 || page > Integer.MAX_VALUE / PAGE_SIZE) {
+                    response.sendError(
+                            HttpServletResponse.SC_BAD_REQUEST,
+                            "Invalid page number."
+                    );
+                    return;
+                }
+
             } catch (NumberFormatException e) {
                 response.sendError(
                         HttpServletResponse.SC_BAD_REQUEST,
@@ -44,26 +67,16 @@ public class ListingsServlet extends HttpServlet {
             }
         }
 
-        // Calculate how many listings to skip.
-        if (page > Integer.MAX_VALUE / PAGE_SIZE) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Page number is too large."
-            );
-            return;
-        }
-
         int offset = page * PAGE_SIZE;
 
         try {
             List<ServiceListing> listings =
-                    listingDAO.findActive(PAGE_SIZE, offset);
+                    listingDAO.findActive(
+                            PAGE_SIZE, offset, searchQuery);
 
             request.setAttribute("listings", listings);
-
-            // Tell the JSP whether this is the first page
-            // or an additional batch.
             request.setAttribute("isBatch", page > 0);
+            request.setAttribute("searchQuery", searchQuery);
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/service-listings.jsp"

@@ -1,6 +1,8 @@
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
+
 <%!
     private String escapeHtml(String value) {
         if (value == null) return "";
@@ -18,6 +20,12 @@
 
     boolean isBatch =
             Boolean.TRUE.equals(request.getAttribute("isBatch"));
+
+    String searchQuery =
+            (String) request.getAttribute("searchQuery");
+
+    boolean searching =
+            searchQuery != null && !searchQuery.isBlank();
 %>
 
 <% if (!isBatch) { %>
@@ -51,9 +59,15 @@
         <h1>Find services in your community</h1>
         <p>Connect with local professionals for everyday jobs.</p>
 
-        <form class="search-form">
-            <input type="text"
-                   placeholder="Search for a service...">
+        <form class="search-form"
+              action="${pageContext.request.contextPath}/listings"
+              method="get">
+
+            <input type="search"
+                   name="q"
+                   value="<%= escapeHtml(searchQuery) %>"
+                   placeholder="Search services or providers...">
+
             <button type="submit" class="btn btn-primary">
                 Search
             </button>
@@ -65,8 +79,24 @@
 
     <section class="browse-header">
         <div>
-            <h2>Available Services</h2>
-            <p>Explore services offered by local providers.</p>
+
+            <h2>
+                <%= searching ? "Search Results" : "Available Services" %>
+            </h2>
+
+            <p>
+                <% if (searching) { %>
+                    Showing results for
+                    <strong><%= escapeHtml(searchQuery) %></strong>
+                    —
+                    <a href="${pageContext.request.contextPath}/listings">
+                        Clear search
+                    </a>
+                <% } else { %>
+                    Explore services offered by local providers.
+                <% } %>
+            </p>
+
         </div>
     </section>
 
@@ -119,7 +149,11 @@
     </section>
 
     <% if (listings == null || listings.isEmpty()) { %>
-        <p>No services are currently available.</p>
+        <p>
+            <%= searching
+                    ? "No matching services found. Try a different keyword."
+                    : "No services are currently available." %>
+        </p>
     <% } %>
 
     <div id="scroll-trigger"></div>
@@ -135,18 +169,23 @@
 </footer>
 
 <script>
-
     const grid = document.getElementById("listing-grid");
     const trigger = document.getElementById("scroll-trigger");
     const resultsMessage = document.getElementById("results-message");
 
     const pageSize = 30;
+
+    // Preserve the search when requesting additional pages.
+    const searchQuery =
+        new URLSearchParams(window.location.search).get("q") || "";
+
     let nextPage = 1;
     let loading = false;
     let hasMore = <%= listings != null && listings.size() == 30 %>;
 
     function showEndMessage() {
-        resultsMessage.textContent = "You've reached the end of the results.";
+        resultsMessage.textContent =
+            "You've reached the end of the results.";
         resultsMessage.hidden = false;
     }
 
@@ -163,8 +202,15 @@
         resultsMessage.hidden = false;
 
         try {
+            // Include both pagination and search parameters.
+            const params = new URLSearchParams({
+                page: String(nextPage),
+                q: searchQuery
+            });
+
             const response = await fetch(
-                "${pageContext.request.contextPath}/listings?page=" + nextPage
+                "${pageContext.request.contextPath}/listings?"
+                + params.toString()
             );
 
             if (!response.ok) {
@@ -200,7 +246,7 @@
                 "Unable to load more services. Please refresh to try again.";
             resultsMessage.hidden = false;
 
-            // Stop automatic retries after an error.
+            // Prevent repeated failed requests.
             hasMore = false;
 
         } finally {
@@ -213,7 +259,7 @@
 
     if (hasMore) {
         observer.observe(trigger);
-    } else {
+    } else if (grid.querySelectorAll(".listing-card").length > 0) {
         showEndMessage();
     }
 

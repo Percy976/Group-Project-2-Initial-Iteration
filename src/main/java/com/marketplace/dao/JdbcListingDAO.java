@@ -13,39 +13,77 @@ import java.util.List;
 
 public class JdbcListingDAO {
 
-    public List<ServiceListing> findActive(int limit, int offset)
+    public List<ServiceListing> findActive(
+            int limit, int offset, String searchQuery)
             throws SQLException {
 
-        String sql = """
+        StringBuilder sql = new StringBuilder("""
                 SELECT l.listing_id, l.provider_id, l.title,
                        l.description, l.price,
-                       CONCAT(u.first_name, ' ', u.last_name) AS provider_name
+                       CONCAT_WS(' ', u.first_name, u.last_name)
+                           AS provider_name
                 FROM listings l
                 JOIN users u ON l.provider_id = u.user_id
                 WHERE l.status = 'ACTIVE'
+                """);
+
+        String[] keywords = searchQuery == null
+                || searchQuery.isBlank()
+                ? new String[0]
+                : searchQuery.trim().split("\\s+");
+
+        for (String keyword : keywords) {
+            sql.append("""
+                    
+                    AND (
+                        LOWER(l.title) LIKE ? ESCAPE '!'
+                        OR LOWER(CONCAT_WS(' ', u.first_name, u.last_name))
+                           LIKE ? ESCAPE '!'
+                    )
+                    """);
+        }
+
+        sql.append("""
+                
                 ORDER BY l.listing_id
                 LIMIT ? OFFSET ?
-                """;
+                """);
 
         List<ServiceListing> listings = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement =
+                     connection.prepareStatement(sql.toString())) {
 
-            statement.setInt(1, limit);
-            statement.setInt(2, offset);
+            int parameter = 1;
+
+            for (String keyword : keywords) {
+                String pattern = "%" + keyword.toLowerCase(
+                                java.util.Locale.ROOT)
+                        .replace("!", "!!")
+                        .replace("%", "!%")
+                        .replace("_", "!_") + "%";
+
+                statement.setString(parameter++, pattern);
+                statement.setString(parameter++, pattern);
+            }
+
+            statement.setInt(parameter++, limit);
+            statement.setInt(parameter, offset);
 
             try (ResultSet results = statement.executeQuery()) {
 
                 while (results.next()) {
-
                     ServiceListing listing = new ServiceListing();
 
                     listing.setListingId(results.getInt("listing_id"));
                     listing.setProviderId(results.getInt("provider_id"));
-                    listing.setProviderName(results.getString("provider_name"));
-                    listing.setServiceName(results.getString("title"));
-                    listing.setDescription(results.getString("description"));
+                    listing.setProviderName(
+                            results.getString("provider_name"));
+                    listing.setServiceName(
+                            results.getString("title"));
+                    listing.setDescription(
+                            results.getString("description"));
                     listing.setPrice(results.getBigDecimal("price"));
                     listing.setActive(true);
 
