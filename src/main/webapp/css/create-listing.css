@@ -1,0 +1,110 @@
+
+/* Create listing page */
+
+.create-listing-main {
+    width: 100%;
+    padding-top: 48px;
+    padding-bottom: 80px;
+}
+
+.create-listing-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px #00000012;
+}
+
+.create-listing-card h1 {
+    margin-top: 16px;
+}
+
+.create-listing-card a {
+    color: #176345;
+}
+
+/* Form fields */
+
+.create-listing-card label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.create-listing-card input:not([type="hidden"]),
+.create-listing-card textarea,
+.create-listing-card select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #a9bdb3;
+    border-radius: 6px;
+    background: white;
+    color: #252b33;
+    font: inherit;
+}
+
+.create-listing-card textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.create-listing-card input:focus,
+.create-listing-card textarea:focus,
+.create-listing-card select:focus {
+    outline: 2px solid #176345;
+    outline-offset: 2px;
+}
+
+/* Submit button */
+
+.create-listing-card button[type="submit"] {
+    margin-top: 26px;
+    padding: 12px 24px;
+}
+
+/* Feedback messages */
+
+.create-listing-card .message {
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.create-listing-card .success {
+    background: #e8f5ed;
+    color: #185c39;
+}
+
+.create-listing-card .error {
+    background: #fff0f0;
+    color: #a51c1c;
+}
+
+/* Field help text */
+
+.create-listing-card .hint {
+    margin: 6px 0 0;
+    color: #53665c;
+    font-size: 0.9rem;
+}
+
+/* Mobile layout */
+
+@media (max-width: 600px) {
+    .create-listing-main {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .create-listing-card {
+        padding: 22px;
+    }
+
+    .create-listing-card button[type="submit"] {
+        width: 100%;
+    }
+}
