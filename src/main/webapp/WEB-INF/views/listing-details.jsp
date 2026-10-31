@@ -1,6 +1,7 @@
-
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
+<%@ page import="com.marketplace.model.ServiceReview" %>
+<%@ page import="java.util.List" %>
 
 <%!
     private String escapeHtml(String value) {
@@ -16,6 +17,12 @@
 <%
     ServiceListing listing =
             (ServiceListing) request.getAttribute("listing");
+
+    List<ServiceReview> reviews =
+            (List<ServiceReview>) request.getAttribute("reviews");
+
+    Double averageRating =
+            (Double) request.getAttribute("averageRating");
 %>
 
 <!DOCTYPE html>
@@ -109,6 +116,109 @@
         <% } %>
 
     </section>
+
+
+    <section class="reviews">
+
+        <h2>Customer Reviews</h2>
+
+        <% if (averageRating != null) { %>
+
+            <p>
+                <strong>Average Rating:</strong>
+                <%= String.format("%.1f", averageRating) %> / 5
+            </p>
+
+        <% } else { %>
+
+            <p>No ratings yet.</p>
+
+        <% } %>
+
+
+        <% if (reviews != null && !reviews.isEmpty()) { %>
+
+            <% for (ServiceReview review : reviews) { %>
+
+                <div class="review">
+
+                    <h3>
+                        <%= escapeHtml(review.getTitle()) %>
+                    </h3>
+
+                    <p>
+                        <strong>Rating:</strong>
+                        <%= review.getRating() %> / 5
+                    </p>
+
+                    <p>
+                        <%= escapeHtml(review.getDescription()) %>
+                    </p>
+
+                </div>
+
+            <% } %>
+
+        <% } else { %>
+
+            <p>There are no reviews for this service yet.</p>
+
+        <% } %>
+
+    </section>
+
+    <% if (session.getAttribute("user") != null) { %>
+
+    <section class="review-form">
+
+        <h2>Write a Review</h2>
+
+        <form action="${pageContext.request.contextPath}/review"
+              method="post">
+
+            <input type="hidden"
+                   name="listingId"
+                   value="<%= listing.getListingId() %>">
+
+            <label for="requestId">Completed Request ID</label>
+            <input type="number"
+                   id="requestId"
+                   name="requestId"
+                   min="1"
+                   required>
+
+            <label for="title">Review Title</label>
+            <input type="text"
+                   id="title"
+                   name="title"
+                   maxlength="150"
+                   required>
+
+            <label for="description">Review Description</label>
+            <textarea id="description"
+                      name="description"
+                      rows="5"
+                      required></textarea>
+
+            <label for="rating">Rating</label>
+            <select id="rating" name="rating" required>
+                <option value="">Choose a rating</option>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Poor</option>
+                <option value="1">1 - Terrible</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">
+                Submit Review
+            </button>
+
+        </form>
+
+    </section>
+
+<% } %>
 
 </main>
 

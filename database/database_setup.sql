@@ -88,27 +88,28 @@ CREATE TABLE IF NOT EXISTS service_requests (
 CREATE TABLE IF NOT EXISTS reviews (
     review_id INT NOT NULL AUTO_INCREMENT,
     request_id INT NOT NULL,
-    reviewer_id INT NOT NULL,
-    provider_id INT NOT NULL,
+    listing_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
     rating TINYINT NOT NULL,
-    comment TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (review_id),
     UNIQUE KEY request_id (request_id),
-    KEY fk_reviews_reviewer (reviewer_id),
-    KEY fk_reviews_provider (provider_id),
-
-    CONSTRAINT fk_reviews_provider
-        FOREIGN KEY (provider_id)
-        REFERENCES users (user_id),
+    KEY fk_reviews_listing (listing_id),
+    KEY fk_reviews_customer (customer_id),
 
     CONSTRAINT fk_reviews_request
         FOREIGN KEY (request_id)
         REFERENCES service_requests (request_id),
 
-    CONSTRAINT fk_reviews_reviewer
-        FOREIGN KEY (reviewer_id)
+    CONSTRAINT fk_reviews_listing
+        FOREIGN KEY (listing_id)
+        REFERENCES listings (listing_id),
+
+    CONSTRAINT fk_reviews_customer
+        FOREIGN KEY (customer_id)
         REFERENCES users (user_id),
 
     CONSTRAINT chk_review_rating
