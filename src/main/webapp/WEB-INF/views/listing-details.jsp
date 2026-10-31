@@ -1,6 +1,8 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
 <%@ page import="com.marketplace.model.ServiceReview" %>
+<%@ page import="com.marketplace.model.User" %>
 <%@ page import="java.util.List" %>
 
 <%!
@@ -23,6 +25,13 @@
 
     Double averageRating =
             (Double) request.getAttribute("averageRating");
+
+    User currentUser = session.getAttribute("user") instanceof User
+            ? (User) session.getAttribute("user")
+            : null;
+
+    boolean isOwner = currentUser != null
+            && currentUser.getUserId() == listing.getProviderId();
 %>
 
 <!DOCTYPE html>
@@ -53,9 +62,8 @@
             Local Services
         </a>
 
-
         <nav>
-            <% if (session.getAttribute("user") != null) { %>
+            <% if (currentUser != null) { %>
 
                 <a href="${pageContext.request.contextPath}/account">
                     My Account
@@ -86,7 +94,6 @@
 
             <% } %>
         </nav>
-
 
     </div>
 </header>
@@ -124,18 +131,22 @@
             <% } %>
         </p>
 
-        <% if (session.getAttribute("user") == null) { %>
+        <% if (!isOwner) { %>
 
-            <a href="${pageContext.request.contextPath}/login"
-               class="btn btn-primary">
-                Request Service
-            </a>
+            <% if (currentUser == null) { %>
 
-        <% } else { %>
+                <a href="${pageContext.request.contextPath}/login"
+                   class="btn btn-primary">
+                    Request Service
+                </a>
 
-            <button type="button" class="btn btn-primary" disabled>
-                Request Service
-            </button>
+            <% } else { %>
+
+                <button type="button" class="btn btn-primary" disabled>
+                    Request Service
+                </button>
+
+            <% } %>
 
         <% } %>
 
@@ -159,16 +170,13 @@
 
         <% } %>
 
-
         <% if (reviews != null && !reviews.isEmpty()) { %>
 
             <% for (ServiceReview review : reviews) { %>
 
                 <div class="review">
 
-                    <h3>
-                        <%= escapeHtml(review.getTitle()) %>
-                    </h3>
+                    <h3><%= escapeHtml(review.getTitle()) %></h3>
 
                     <p>
                         <strong>Rating:</strong>
@@ -191,102 +199,99 @@
 
     </section>
 
-    <% if (session.getAttribute("user") instanceof com.marketplace.model.User
-            && ((com.marketplace.model.User) session.getAttribute("user")).getUserId()
-                    != listing.getProviderId()) { %>
+    <% if (currentUser != null && !isOwner) { %>
 
-    <section class="review-form">
+        <section class="review-form">
 
-        <h2>Write a Review</h2>
+            <h2>Write a Review</h2>
 
+            <%
+                String reviewError =
+                        request.getParameter("reviewError");
+            %>
 
-        <%
-            String reviewError = request.getParameter("reviewError");
-        %>
+            <% if ("invalid".equals(reviewError)) { %>
 
-        <% if ("invalid".equals(reviewError)) { %>
+                <p class="message error" role="alert">
+                    Please provide valid review information.
+                    All required fields must be completed.
+                </p>
 
-            <p class="message error" role="alert">
-                Please provide valid review information.
-                All required fields must be completed.
-            </p>
+            <% } else if ("ineligible".equals(reviewError)) { %>
 
-        <% } else if ("ineligible".equals(reviewError)) { %>
+                <p class="message error" role="alert">
+                    Your review could not be submitted.
+                    Make sure the service request belongs to you,
+                    matches this listing, and has been completed.
+                </p>
 
-            <p class="message error" role="alert">
-                Your review could not be submitted.
-                Make sure the service request belongs to you,
-                matches this listing, and has been completed.
-            </p>
+            <% } else if ("duplicate".equals(reviewError)) { %>
 
-        <% } else if ("duplicate".equals(reviewError)) { %>
+                <p class="message error" role="alert">
+                    You have already submitted a review for
+                    this service request.
+                </p>
 
-            <p class="message error" role="alert">
-                You have already submitted a review for
-                this service request.
-            </p>
+            <% } %>
 
-        <% } %>
+            <% if ("1".equals(request.getParameter("reviewSuccess"))) { %>
 
-        <% if ("1".equals(request.getParameter("reviewSuccess"))) { %>
+                <p class="message success" role="status">
+                    Your review was submitted successfully.
+                </p>
 
-            <p class="message success" role="status">
-                Your review was submitted successfully.
-            </p>
+            <% } %>
 
-        <% } %>
+            <form action="${pageContext.request.contextPath}/review"
+                  method="post">
 
+                <input type="hidden"
+                       name="csrfToken"
+                       value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
 
-        <form action="${pageContext.request.contextPath}/review"
-              method="post">
+                <input type="hidden"
+                       name="listingId"
+                       value="<%= listing.getListingId() %>">
 
-            <input type="hidden"
-                   name="csrfToken"
-                   value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
+                <label for="requestId">Completed Request ID</label>
+                <input type="number"
+                       id="requestId"
+                       name="requestId"
+                       min="1"
+                       required>
 
-            <input type="hidden"
-                   name="listingId"
-                   value="<%= listing.getListingId() %>">
+                <label for="title">Review Title</label>
+                <input type="text"
+                       id="title"
+                       name="title"
+                       maxlength="150"
+                       required>
 
-            <label for="requestId">Completed Request ID</label>
-            <input type="number"
-                   id="requestId"
-                   name="requestId"
-                   min="1"
-                   required>
+                <label for="description">Review Description</label>
+                <textarea id="description"
+                          name="description"
+                          rows="5"
+                          required></textarea>
 
-            <label for="title">Review Title</label>
-            <input type="text"
-                   id="title"
-                   name="title"
-                   maxlength="150"
-                   required>
+                <label for="rating">Rating</label>
+                <select id="rating" name="rating" required>
+                    <option value="">Choose a rating</option>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Poor</option>
+                    <option value="1">1 - Terrible</option>
+                </select>
 
-            <label for="description">Review Description</label>
-            <textarea id="description"
-                      name="description"
-                      rows="5"
-                      required></textarea>
+                <button type="submit" class="btn btn-primary">
+                    Submit Review
+                </button>
 
-            <label for="rating">Rating</label>
-            <select id="rating" name="rating" required>
-                <option value="">Choose a rating</option>
-                <option value="5">5 - Excellent</option>
-                <option value="4">4 - Good</option>
-                <option value="3">3 - Average</option>
-                <option value="2">2 - Poor</option>
-                <option value="1">1 - Terrible</option>
-            </select>
+            </form>
 
-            <button type="submit" class="btn btn-primary">
-                Submit Review
-            </button>
+        </section>
 
-        </form>
-
-    </section>
-
-<% } %>
+    <% } %>
 
 </main>
 

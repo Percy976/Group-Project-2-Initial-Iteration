@@ -1,3 +1,4 @@
+
 package com.marketplace.servlet;
 
 import com.marketplace.dao.JdbcListingDAO;
@@ -95,7 +96,7 @@ public class CreateListingServlet extends HttpServlet {
             BigDecimal price = parsePrice(
                     request.getParameter("price"), priceType);
 
-            // Ownership always comes from the authenticated session.
+            // Ownership comes from the authenticated user.
             int listingId = listingDAO.create(
                     user.getUserId(),
                     title,
@@ -104,10 +105,10 @@ public class CreateListingServlet extends HttpServlet {
                     price,
                     priceType);
 
-            // Redirect after saving so refreshing cannot repeat the POST.
+            // Open the newly created listing.
             response.sendRedirect(
                     request.getContextPath()
-                            + "/listings/create?created=" + listingId);
+                            + "/listing?id=" + listingId);
 
         } catch (IllegalArgumentException exception) {
             request.setAttribute("error", exception.getMessage());
@@ -150,7 +151,7 @@ public class CreateListingServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.getRequestDispatcher(
-                "/WEB-INF/views/create-listing.jsp")
+                        "/WEB-INF/views/create-listing.jsp")
                 .forward(request, response);
     }
 
