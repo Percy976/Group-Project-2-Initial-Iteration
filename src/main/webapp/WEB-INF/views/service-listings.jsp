@@ -1,11 +1,11 @@
-
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
-
+<%@ page import="com.marketplace.model.User" %>
 <%!
     private String escapeHtml(String value) {
         if (value == null) return "";
+
         return value.replace("&", "&amp;")
                     .replace("<", "&lt;")
                     .replace(">", "&gt;")
@@ -13,7 +13,6 @@
                     .replace("'", "&#39;");
     }
 %>
-
 <%
     List<ServiceListing> listings =
             (List<ServiceListing>) request.getAttribute("listings");
@@ -26,6 +25,9 @@
 
     boolean searching =
             searchQuery != null && !searchQuery.isBlank();
+
+    boolean loggedIn =
+            session.getAttribute("user") instanceof User;
 %>
 
 <% if (!isBatch) { %>
@@ -34,7 +36,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Local Services Marketplace</title>
+
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/common.css">
 
@@ -49,10 +53,13 @@
             Local Services
         </a>
 
-
         <nav>
-            <% if (session.getAttribute("user") != null) { %>
+            <a href="${pageContext.request.contextPath}/listings/create"
+               class="btn btn-primary">
+                Create listing
+            </a>
 
+            <% if (loggedIn) { %>
                 <a href="${pageContext.request.contextPath}/account">
                     My Account
                 </a>
@@ -68,9 +75,7 @@
                         Log Out
                     </button>
                 </form>
-
             <% } else { %>
-
                 <a href="${pageContext.request.contextPath}/login">
                     Log In
                 </a>
@@ -79,10 +84,8 @@
                    class="btn btn-outline">
                     Sign Up
                 </a>
-
             <% } %>
         </nav>
-
     </div>
 </header>
 
@@ -108,10 +111,8 @@
 </section>
 
 <main class="container">
-
     <section class="browse-header">
         <div>
-
             <h2>
                 <%= searching ? "Search Results" : "Available Services" %>
             </h2>
@@ -128,7 +129,6 @@
                     Explore services offered by local providers.
                 <% } %>
             </p>
-
         </div>
     </section>
 
@@ -139,11 +139,8 @@
     if (listings != null) {
         for (ServiceListing listing : listings) {
 %>
-
     <article class="listing-card">
-
         <div class="listing-body">
-
             <h3><%= escapeHtml(listing.getServiceName()) %></h3>
 
             <p class="description">
@@ -155,7 +152,6 @@
             </p>
 
             <div class="listing-footer">
-
                 <strong>
                     <% if (listing.getPrice() != null) { %>
                         $<%= listing.getPrice() %>
@@ -168,11 +164,9 @@
                    class="btn btn-primary">
                     View Details
                 </a>
-
             </div>
         </div>
     </article>
-
 <%
         }
     }
@@ -194,7 +188,6 @@
     <p id="results-message" hidden aria-live="polite">
         You've reached the end of the results.
     </p>
-
 </main>
 
 <footer>
@@ -205,7 +198,6 @@
     const grid = document.getElementById("listing-grid");
     const trigger = document.getElementById("scroll-trigger");
     const resultsMessage = document.getElementById("results-message");
-
     const pageSize = 30;
 
     // Preserve the search when requesting additional pages.
@@ -219,11 +211,11 @@
     function showEndMessage() {
         resultsMessage.textContent =
             "You've reached the end of the results.";
+
         resultsMessage.hidden = false;
     }
 
     const observer = new IntersectionObserver(async (entries) => {
-
         if (!entries[0].isIntersecting || loading || !hasMore) {
             return;
         }
@@ -235,7 +227,6 @@
         resultsMessage.hidden = false;
 
         try {
-            // Include both pagination and search parameters.
             const params = new URLSearchParams({
                 page: String(nextPage),
                 q: searchQuery
@@ -251,8 +242,8 @@
             }
 
             const html = await response.text();
-
             const template = document.createElement("template");
+
             template.innerHTML = html.trim();
 
             const newCards =
@@ -261,7 +252,6 @@
             const count = newCards.length;
 
             grid.appendChild(template.content);
-
             nextPage++;
             hasMore = count === pageSize;
 
@@ -271,21 +261,17 @@
             } else {
                 showEndMessage();
             }
-
         } catch (error) {
             console.error("Error loading listings:", error);
 
             resultsMessage.textContent =
                 "Unable to load more services. Please refresh to try again.";
+
             resultsMessage.hidden = false;
-
-            // Prevent repeated failed requests.
             hasMore = false;
-
         } finally {
             loading = false;
         }
-
     }, {
         rootMargin: "300px"
     });
@@ -295,7 +281,6 @@
     } else if (grid.querySelectorAll(".listing-card").length > 0) {
         showEndMessage();
     }
-
 </script>
 
 </body>

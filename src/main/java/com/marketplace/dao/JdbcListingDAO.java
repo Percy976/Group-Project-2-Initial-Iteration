@@ -1,15 +1,18 @@
-
 package com.marketplace.dao;
 
 import com.marketplace.model.ServiceListing;
 import com.marketplace.util.DatabaseConnection;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JdbcListingDAO {
 
@@ -58,8 +61,7 @@ public class JdbcListingDAO {
             int parameter = 1;
 
             for (String keyword : keywords) {
-                String pattern = "%" + keyword.toLowerCase(
-                                java.util.Locale.ROOT)
+                String pattern = "%" + keyword.toLowerCase(Locale.ROOT)
                         .replace("!", "!!")
                         .replace("%", "!%")
                         .replace("_", "!_") + "%";
@@ -95,22 +97,22 @@ public class JdbcListingDAO {
         return listings;
     }
 
-
     public ServiceListing findById(int listingId) throws SQLException {
 
         String sql = """
-            SELECT l.listing_id, l.provider_id, l.title,
-                   l.description, l.price,
-                   CONCAT_WS(' ', u.first_name, u.last_name)
-                       AS provider_name
-            FROM listings l
-            JOIN users u ON l.provider_id = u.user_id
-            WHERE l.listing_id = ?
-              AND l.status = 'ACTIVE'
-            """;
+                SELECT l.listing_id, l.provider_id, l.title,
+                       l.description, l.price,
+                       CONCAT_WS(' ', u.first_name, u.last_name)
+                           AS provider_name
+                FROM listings l
+                JOIN users u ON l.provider_id = u.user_id
+                WHERE l.listing_id = ?
+                  AND l.status = 'ACTIVE'
+                """;
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
             statement.setInt(1, listingId);
 
@@ -121,9 +123,12 @@ public class JdbcListingDAO {
 
                     listing.setListingId(results.getInt("listing_id"));
                     listing.setProviderId(results.getInt("provider_id"));
-                    listing.setProviderName(results.getString("provider_name"));
-                    listing.setServiceName(results.getString("title"));
-                    listing.setDescription(results.getString("description"));
+                    listing.setProviderName(
+                            results.getString("provider_name"));
+                    listing.setServiceName(
+                            results.getString("title"));
+                    listing.setDescription(
+                            results.getString("description"));
                     listing.setPrice(results.getBigDecimal("price"));
                     listing.setActive(true);
 
@@ -135,4 +140,47 @@ public class JdbcListingDAO {
         return null;
     }
 
+    public int create(int providerId, String title,
+                      String description, String category,
+                      BigDecimal price, String priceType)
+            throws SQLException {
+
+        String sql = """
+                INSERT INTO listings
+                    (provider_id, title, description, category,
+                     price, price_type, status)
+                VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            statement.setInt(1, providerId);
+            statement.setString(2, title);
+            statement.setString(3, description);
+            statement.setString(4, category);
+
+            if (price == null) {
+                statement.setNull(5, Types.DECIMAL);
+            } else {
+                statement.setBigDecimal(5, price);
+            }
+
+            statement.setString(6, priceType);
+
+            if (statement.executeUpdate() != 1) {
+                throw new SQLException("Could not create the listing.");
+            }
+
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+
+            throw new SQLException(
+                    "Listing created but no generated ID was returned.");
+        }
+    }
 }
