@@ -1,0 +1,120 @@
+
+.requests-main {
+    padding-top: 40px;
+    padding-bottom: 80px;
+    max-width: 900px;
+}
+
+.requests-main h1 {
+    margin-bottom: 28px;
+}
+
+.request-section {
+    margin-top: 36px;
+}
+
+.request-section h2 {
+    margin-bottom: 18px;
+}
+
+.request-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 18px;
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.request-header h3 {
+    margin: 0;
+}
+
+.request-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #e8efeb;
+    color: #254a37;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.request-card p {
+    margin: 12px 0;
+}
+
+.request-text {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.request-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.request-actions form {
+    margin: 0;
+}
+
+.response-form {
+    margin-top: 20px;
+}
+
+.response-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.response-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5d1;
+    border-radius: 6px;
+    font: inherit;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.request-message {
+    padding: 14px;
+    border-radius: 6px;
+    margin: 20px 0;
+}
+
+.request-message.success {
+    background: #eaf6ee;
+    color: #216347;
+}
+
+.request-message.error {
+    background: #fff0f0;
+    color: #9c2020;
+}
+
+.reviewed-label {
+    color: #216347;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .requests-main {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .request-card {
+        padding: 18px;
+    }
+}

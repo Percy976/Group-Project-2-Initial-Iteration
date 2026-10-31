@@ -6,6 +6,7 @@
 <%!
     private String escapeHtml(Object value) {
         if (value == null) return "";
+
         return value.toString()
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
@@ -59,7 +60,8 @@
 
                 <input type="hidden"
                        name="csrfToken"
-                       value="<%= escapeHtml(session.getAttribute("csrfToken")) %>">
+                       value="<%= escapeHtml(
+                           session.getAttribute("csrfToken")) %>">
 
                 <button type="submit" class="btn btn-outline">
                     Log Out
@@ -126,9 +128,11 @@
 
                 <input type="hidden"
                        name="csrfToken"
-                       value="<%= escapeHtml(session.getAttribute("csrfToken")) %>">
+                       value="<%= escapeHtml(
+                           session.getAttribute("csrfToken")) %>">
 
                 <label for="firstName">First Name</label>
+
                 <input type="text"
                        id="firstName"
                        name="firstName"
@@ -137,6 +141,7 @@
                        required>
 
                 <label for="lastName">Last Name</label>
+
                 <input type="text"
                        id="lastName"
                        name="lastName"
@@ -145,6 +150,7 @@
                        required>
 
                 <label for="email">Email</label>
+
                 <input type="email"
                        id="email"
                        name="email"
@@ -153,6 +159,7 @@
                        required>
 
                 <label for="phone">Phone Number</label>
+
                 <input type="tel"
                        id="phone"
                        name="phone"
@@ -160,12 +167,14 @@
                        value="<%= escapeHtml(accountUser.getPhoneNumber()) %>">
 
                 <label for="bio">Bio</label>
+
                 <textarea id="bio"
                           name="bio"
                           rows="4"
                           maxlength="2000"><%= escapeHtml(accountUser.getBio()) %></textarea>
 
                 <div class="profile-actions">
+
                     <button type="submit" class="btn btn-primary">
                         Save Changes
                     </button>
@@ -175,11 +184,13 @@
                             class="btn btn-outline">
                         Cancel
                     </button>
+
                 </div>
             </form>
         </section>
 
         <section class="edit-profile">
+
             <h2>My Service Listings</h2>
 
             <p>
@@ -188,6 +199,7 @@
             </p>
 
             <div class="profile-actions">
+
                 <a href="${pageContext.request.contextPath}/account/listings"
                    class="btn btn-primary">
                     Manage My Listings
@@ -197,7 +209,26 @@
                    class="btn btn-outline">
                     Create Listing
                 </a>
+
             </div>
+        </section>
+
+        <section class="edit-profile">
+
+            <h2>Service Requests</h2>
+
+            <p>
+                Manage requests you've sent to providers
+                and requests customers have sent to you.
+            </p>
+
+            <div class="profile-actions">
+                <a href="${pageContext.request.contextPath}/requests"
+                   class="btn btn-primary">
+                    Manage Service Requests
+                </a>
+            </div>
+
         </section>
 
     </section>
