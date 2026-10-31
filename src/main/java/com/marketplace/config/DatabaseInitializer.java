@@ -30,11 +30,9 @@ public class DatabaseInitializer {
             try (Connection connection =
                          DriverManager.getConnection(url, user, password)) {
 
-                // Create the database and tables first
                 executeSqlFile(connection, "db/database_setup.sql");
-
-                // Then create the demo provider and 50 listings
                 executeSqlFile(connection, "db/marketplace_seed_listings.sql");
+                executeSqlFile(connection, "db/marketplace_seed_reviews.sql");
 
                 System.out.println(
                         "Database initialization completed successfully."
