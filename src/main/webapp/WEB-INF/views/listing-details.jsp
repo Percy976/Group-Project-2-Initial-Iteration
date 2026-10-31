@@ -1,18 +1,20 @@
 
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
 <%@ page import="com.marketplace.model.ServiceReview" %>
 <%@ page import="com.marketplace.model.User" %>
 <%@ page import="java.util.List" %>
 
 <%!
-    private String escapeHtml(String value) {
+    private String escapeHtml(Object value) {
         if (value == null) return "";
-        return value.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&#39;");
+        return value.toString()
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 %>
 
@@ -38,7 +40,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
     <title>
         <%= escapeHtml(listing.getServiceName()) %>
@@ -74,7 +77,8 @@
 
                     <input type="hidden"
                            name="csrfToken"
-                           value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
+                           value="<%= escapeHtml(
+                               session.getAttribute("csrfToken")) %>">
 
                     <button type="submit" class="btn btn-outline">
                         Log Out
@@ -94,7 +98,6 @@
 
             <% } %>
         </nav>
-
     </div>
 </header>
 
@@ -112,7 +115,11 @@
 
         <p class="provider">
             Provided by
-            <strong><%= escapeHtml(listing.getProviderName()) %></strong>
+            <a href="${pageContext.request.contextPath}/provider?id=<%= listing.getProviderId() %>">
+                <strong>
+                    <%= escapeHtml(listing.getProviderName()) %>
+                </strong>
+            </a>
         </p>
 
         <h2>About This Service</h2>
@@ -142,7 +149,9 @@
 
             <% } else { %>
 
-                <button type="button" class="btn btn-primary" disabled>
+                <button type="button"
+                        class="btn btn-primary"
+                        disabled>
                     Request Service
                 </button>
 
@@ -151,7 +160,6 @@
         <% } %>
 
     </section>
-
 
     <section class="reviews">
 
@@ -176,7 +184,9 @@
 
                 <div class="review">
 
-                    <h3><%= escapeHtml(review.getTitle()) %></h3>
+                    <h3>
+                        <%= escapeHtml(review.getTitle()) %>
+                    </h3>
 
                     <p>
                         <strong>Rating:</strong>
@@ -234,7 +244,8 @@
 
             <% } %>
 
-            <% if ("1".equals(request.getParameter("reviewSuccess"))) { %>
+            <% if ("1".equals(
+                    request.getParameter("reviewSuccess"))) { %>
 
                 <p class="message success" role="status">
                     Your review was submitted successfully.
@@ -242,18 +253,20 @@
 
             <% } %>
 
-            <form action="${pageContext.request.contextPath}/review"
-                  method="post">
+            <form method="post"
+                  action="${pageContext.request.contextPath}/review">
 
                 <input type="hidden"
                        name="csrfToken"
-                       value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
+                       value="<%= escapeHtml(
+                           session.getAttribute("csrfToken")) %>">
 
                 <input type="hidden"
                        name="listingId"
                        value="<%= listing.getListingId() %>">
 
                 <label for="requestId">Completed Request ID</label>
+
                 <input type="number"
                        id="requestId"
                        name="requestId"
@@ -261,6 +274,7 @@
                        required>
 
                 <label for="title">Review Title</label>
+
                 <input type="text"
                        id="title"
                        name="title"
@@ -268,12 +282,14 @@
                        required>
 
                 <label for="description">Review Description</label>
+
                 <textarea id="description"
                           name="description"
                           rows="5"
                           required></textarea>
 
                 <label for="rating">Rating</label>
+
                 <select id="rating" name="rating" required>
                     <option value="">Choose a rating</option>
                     <option value="5">5 - Excellent</option>
