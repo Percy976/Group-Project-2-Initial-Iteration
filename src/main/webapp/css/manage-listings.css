@@ -1,0 +1,133 @@
+
+/* My Listings page */
+
+.manage-main {
+    padding-top: 48px;
+    padding-bottom: 80px;
+}
+
+.manage-card {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 32px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.manage-card h1 {
+    margin-top: 12px;
+}
+
+.manage-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.managed-listing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.managed-listing h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.listing-meta,
+.hint {
+    color: #53685e;
+    font-size: 14px;
+}
+
+.listing-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.listing-actions form {
+    margin: 0;
+}
+
+.btn-danger {
+    border: 1px solid #a51c1c;
+    background: white;
+    color: #a51c1c;
+}
+
+.btn-danger:hover {
+    background: #fff0f0;
+}
+
+/* Edit form */
+
+.listing-edit-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.listing-edit-form label {
+    margin: 18px 0 6px;
+    font-weight: 600;
+}
+
+.listing-edit-form input,
+.listing-edit-form textarea,
+.listing-edit-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #aabbb3;
+    border-radius: 6px;
+    background: white;
+    color: #252b33;
+    font: inherit;
+}
+
+.listing-edit-form textarea {
+    resize: vertical;
+}
+
+.listing-edit-form .listing-actions {
+    margin-top: 24px;
+}
+
+.message {
+    padding: 12px;
+    margin: 16px 0;
+    border-radius: 6px;
+}
+
+.message.success {
+    background: #eaf6ee;
+    color: #216347;
+}
+
+.message.error {
+    background: #fff0f0;
+    color: #9c2020;
+}
+
+@media (max-width: 600px) {
+    .manage-main {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .manage-card {
+        padding: 20px;
+    }
+
+    .managed-listing {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

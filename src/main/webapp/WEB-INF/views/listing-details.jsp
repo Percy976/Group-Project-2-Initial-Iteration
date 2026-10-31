@@ -191,7 +191,9 @@
 
     </section>
 
-    <% if (session.getAttribute("user") != null) { %>
+    <% if (session.getAttribute("user") instanceof com.marketplace.model.User
+            && ((com.marketplace.model.User) session.getAttribute("user")).getUserId()
+                    != listing.getProviderId()) { %>
 
     <section class="review-form">
 

@@ -5,9 +5,7 @@
 
 <%!
     private String escapeHtml(Object value) {
-        if (value == null) {
-            return "";
-        }
+        if (value == null) return "";
         return value.toString()
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
@@ -68,7 +66,6 @@
                 </button>
             </form>
         </nav>
-
     </div>
 </header>
 
@@ -84,7 +81,6 @@
             </p>
         <% } %>
 
-        <!-- VIEW MODE -->
         <div id="profile-view">
 
             <dl>
@@ -122,7 +118,6 @@
 
         </div>
 
-        <!-- EDIT MODE -->
         <section id="profile-edit" class="edit-profile" hidden>
 
             <form id="edit-profile-form"
@@ -181,13 +176,31 @@
                         Cancel
                     </button>
                 </div>
-
             </form>
+        </section>
 
+        <section class="edit-profile">
+            <h2>My Service Listings</h2>
+
+            <p>
+                View, edit, or remove the services you offer
+                in the marketplace.
+            </p>
+
+            <div class="profile-actions">
+                <a href="${pageContext.request.contextPath}/account/listings"
+                   class="btn btn-primary">
+                    Manage My Listings
+                </a>
+
+                <a href="${pageContext.request.contextPath}/listings/create"
+                   class="btn btn-outline">
+                    Create Listing
+                </a>
+            </div>
         </section>
 
     </section>
-
 </main>
 
 <footer>
