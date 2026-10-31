@@ -1,3 +1,4 @@
+
 package com.marketplace.model;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class ServiceListing implements Serializable {
     private int providerId;
     private String serviceName;
     private String description;
+    private String category;
     private BigDecimal price;
     private String serviceArea;
     private boolean active;
@@ -74,6 +76,14 @@ public class ServiceListing implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public BigDecimal getPrice() {

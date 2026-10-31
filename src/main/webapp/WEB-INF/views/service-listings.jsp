@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
@@ -142,6 +143,10 @@
     <article class="listing-card">
         <div class="listing-body">
             <h3><%= escapeHtml(listing.getServiceName()) %></h3>
+
+            <p class="listing-category">
+                <strong>Category:</strong> <%= escapeHtml(listing.getCategory()) %>
+            </p>
 
             <p class="description">
                 <%= escapeHtml(listing.getDescription()) %>

@@ -1,3 +1,4 @@
+
 package com.marketplace.dao;
 
 import com.marketplace.model.ServiceListing;
@@ -22,7 +23,7 @@ public class JdbcListingDAO {
 
         StringBuilder sql = new StringBuilder("""
                 SELECT l.listing_id, l.provider_id, l.title,
-                       l.description, l.price,
+                       l.description, l.category, l.price,
                        CONCAT_WS(' ', u.first_name, u.last_name)
                            AS provider_name
                 FROM listings l
@@ -86,6 +87,7 @@ public class JdbcListingDAO {
                             results.getString("title"));
                     listing.setDescription(
                             results.getString("description"));
+                    listing.setCategory(results.getString("category"));
                     listing.setPrice(results.getBigDecimal("price"));
                     listing.setActive(true);
 
@@ -101,7 +103,7 @@ public class JdbcListingDAO {
 
         String sql = """
                 SELECT l.listing_id, l.provider_id, l.title,
-                       l.description, l.price,
+                       l.description, l.category, l.price,
                        CONCAT_WS(' ', u.first_name, u.last_name)
                            AS provider_name
                 FROM listings l
@@ -129,6 +131,7 @@ public class JdbcListingDAO {
                             results.getString("title"));
                     listing.setDescription(
                             results.getString("description"));
+                    listing.setCategory(results.getString("category"));
                     listing.setPrice(results.getBigDecimal("price"));
                     listing.setActive(true);
 

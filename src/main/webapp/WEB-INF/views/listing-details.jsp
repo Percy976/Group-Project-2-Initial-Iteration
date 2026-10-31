@@ -1,20 +1,18 @@
 
-<%@ page contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.marketplace.model.ServiceListing" %>
 <%@ page import="com.marketplace.model.ServiceReview" %>
 <%@ page import="com.marketplace.model.User" %>
 <%@ page import="java.util.List" %>
 
 <%!
-    private String escapeHtml(Object value) {
+    private String escapeHtml(String value) {
         if (value == null) return "";
-        return value.toString()
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "&#39;");
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#39;");
     }
 %>
 
@@ -29,9 +27,7 @@
             (Double) request.getAttribute("averageRating");
 
     User currentUser = session.getAttribute("user") instanceof User
-            ? (User) session.getAttribute("user")
-            : null;
-
+            ? (User) session.getAttribute("user") : null;
     boolean isOwner = currentUser != null
             && currentUser.getUserId() == listing.getProviderId();
 %>
@@ -40,8 +36,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
         <%= escapeHtml(listing.getServiceName()) %>
@@ -65,8 +60,9 @@
             Local Services
         </a>
 
+
         <nav>
-            <% if (currentUser != null) { %>
+            <% if (session.getAttribute("user") != null) { %>
 
                 <a href="${pageContext.request.contextPath}/account">
                     My Account
@@ -77,8 +73,7 @@
 
                     <input type="hidden"
                            name="csrfToken"
-                           value="<%= escapeHtml(
-                               session.getAttribute("csrfToken")) %>">
+                           value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
 
                     <button type="submit" class="btn btn-outline">
                         Log Out
@@ -98,6 +93,8 @@
 
             <% } %>
         </nav>
+
+
     </div>
 </header>
 
@@ -116,10 +113,12 @@
         <p class="provider">
             Provided by
             <a href="${pageContext.request.contextPath}/provider?id=<%= listing.getProviderId() %>">
-                <strong>
-                    <%= escapeHtml(listing.getProviderName()) %>
-                </strong>
+                <strong><%= escapeHtml(listing.getProviderName()) %></strong>
             </a>
+        </p>
+
+        <p class="listing-category">
+            <strong>Category:</strong> <%= escapeHtml(listing.getCategory()) %>
         </p>
 
         <h2>About This Service</h2>
@@ -139,27 +138,24 @@
         </p>
 
         <% if (!isOwner) { %>
+        <% if (currentUser == null) { %>
 
-            <% if (currentUser == null) { %>
+            <a href="${pageContext.request.contextPath}/login"
+               class="btn btn-primary">
+                Request Service
+            </a>
 
-                <a href="${pageContext.request.contextPath}/login"
-                   class="btn btn-primary">
-                    Request Service
-                </a>
+        <% } else { %>
 
-            <% } else { %>
+            <button type="button" class="btn btn-primary" disabled>
+                Request Service
+            </button>
 
-                <button type="button"
-                        class="btn btn-primary"
-                        disabled>
-                    Request Service
-                </button>
-
-            <% } %>
-
+        <% } %>
         <% } %>
 
     </section>
+
 
     <section class="reviews">
 
@@ -177,6 +173,7 @@
             <p>No ratings yet.</p>
 
         <% } %>
+
 
         <% if (reviews != null && !reviews.isEmpty()) { %>
 
@@ -211,103 +208,98 @@
 
     <% if (currentUser != null && !isOwner) { %>
 
-        <section class="review-form">
+    <section class="review-form">
 
-            <h2>Write a Review</h2>
+        <h2>Write a Review</h2>
 
-            <%
-                String reviewError =
-                        request.getParameter("reviewError");
-            %>
 
-            <% if ("invalid".equals(reviewError)) { %>
+        <%
+            String reviewError = request.getParameter("reviewError");
+        %>
 
-                <p class="message error" role="alert">
-                    Please provide valid review information.
-                    All required fields must be completed.
-                </p>
+        <% if ("invalid".equals(reviewError)) { %>
 
-            <% } else if ("ineligible".equals(reviewError)) { %>
+            <p class="message error" role="alert">
+                Please provide valid review information.
+                All required fields must be completed.
+            </p>
 
-                <p class="message error" role="alert">
-                    Your review could not be submitted.
-                    Make sure the service request belongs to you,
-                    matches this listing, and has been completed.
-                </p>
+        <% } else if ("ineligible".equals(reviewError)) { %>
 
-            <% } else if ("duplicate".equals(reviewError)) { %>
+            <p class="message error" role="alert">
+                Your review could not be submitted.
+                Make sure the service request belongs to you,
+                matches this listing, and has been completed.
+            </p>
 
-                <p class="message error" role="alert">
-                    You have already submitted a review for
-                    this service request.
-                </p>
+        <% } else if ("duplicate".equals(reviewError)) { %>
 
-            <% } %>
+            <p class="message error" role="alert">
+                You have already submitted a review for
+                this service request.
+            </p>
 
-            <% if ("1".equals(
-                    request.getParameter("reviewSuccess"))) { %>
+        <% } %>
 
-                <p class="message success" role="status">
-                    Your review was submitted successfully.
-                </p>
+        <% if ("1".equals(request.getParameter("reviewSuccess"))) { %>
 
-            <% } %>
+            <p class="message success" role="status">
+                Your review was submitted successfully.
+            </p>
 
-            <form method="post"
-                  action="${pageContext.request.contextPath}/review">
+        <% } %>
 
-                <input type="hidden"
-                       name="csrfToken"
-                       value="<%= escapeHtml(
-                           session.getAttribute("csrfToken")) %>">
 
-                <input type="hidden"
-                       name="listingId"
-                       value="<%= listing.getListingId() %>">
+        <form action="${pageContext.request.contextPath}/review"
+              method="post">
 
-                <label for="requestId">Completed Request ID</label>
+            <input type="hidden"
+                   name="csrfToken"
+                   value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
 
-                <input type="number"
-                       id="requestId"
-                       name="requestId"
-                       min="1"
-                       required>
+            <input type="hidden"
+                   name="listingId"
+                   value="<%= listing.getListingId() %>">
 
-                <label for="title">Review Title</label>
+            <label for="requestId">Completed Request ID</label>
+            <input type="number"
+                   id="requestId"
+                   name="requestId"
+                   min="1"
+                   required>
 
-                <input type="text"
-                       id="title"
-                       name="title"
-                       maxlength="150"
-                       required>
+            <label for="title">Review Title</label>
+            <input type="text"
+                   id="title"
+                   name="title"
+                   maxlength="150"
+                   required>
 
-                <label for="description">Review Description</label>
+            <label for="description">Review Description</label>
+            <textarea id="description"
+                      name="description"
+                      rows="5"
+                      required></textarea>
 
-                <textarea id="description"
-                          name="description"
-                          rows="5"
-                          required></textarea>
+            <label for="rating">Rating</label>
+            <select id="rating" name="rating" required>
+                <option value="">Choose a rating</option>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Poor</option>
+                <option value="1">1 - Terrible</option>
+            </select>
 
-                <label for="rating">Rating</label>
+            <button type="submit" class="btn btn-primary">
+                Submit Review
+            </button>
 
-                <select id="rating" name="rating" required>
-                    <option value="">Choose a rating</option>
-                    <option value="5">5 - Excellent</option>
-                    <option value="4">4 - Good</option>
-                    <option value="3">3 - Average</option>
-                    <option value="2">2 - Poor</option>
-                    <option value="1">1 - Terrible</option>
-                </select>
+        </form>
 
-                <button type="submit" class="btn btn-primary">
-                    Submit Review
-                </button>
+    </section>
 
-            </form>
-
-        </section>
-
-    <% } %>
+<% } %>
 
 </main>
 
