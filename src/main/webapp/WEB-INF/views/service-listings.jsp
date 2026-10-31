@@ -60,10 +60,21 @@
             </a>
 
             <% if (loggedIn) { %>
-                <a href="${pageContext.request.contextPath}/account"
-                   class="btn btn-outline">
-                    My account
+                <a href="${pageContext.request.contextPath}/account">
+                    My Account
                 </a>
+
+                <form method="post"
+                      action="${pageContext.request.contextPath}/logout">
+
+                    <input type="hidden"
+                           name="csrfToken"
+                           value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
+
+                    <button type="submit" class="btn btn-outline">
+                        Log Out
+                    </button>
+                </form>
             <% } else { %>
                 <a href="${pageContext.request.contextPath}/login">
                     Log In

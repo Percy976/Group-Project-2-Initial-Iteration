@@ -1,0 +1,123 @@
+
+/* Shared authentication page styling */
+
+.auth-main {
+    flex: 1;
+    width: 100%;
+    padding-top: 48px;
+    padding-bottom: 80px;
+}
+
+.auth-card {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 32px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px #00000012;
+}
+
+.auth-card h1 {
+    margin-top: 0;
+}
+
+.auth-card p {
+    line-height: 1.5;
+}
+
+/* Form fields */
+
+.auth-card form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-card label {
+    display: block;
+    margin-top: 18px;
+    font-weight: 600;
+}
+
+.auth-card input:not([type="hidden"]),
+.auth-card textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px;
+    border: 1px solid #aabbb3;
+    border-radius: 6px;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.auth-card input:focus,
+.auth-card textarea:focus {
+    outline: 2px solid #216347;
+    outline-offset: 2px;
+}
+
+/* Buttons and links */
+
+.auth-card button[type="submit"] {
+    width: 100%;
+    margin-top: 24px;
+    padding: 13px;
+    cursor: pointer;
+}
+
+.auth-help {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.auth-help a,
+.auth-footer a {
+    color: #216347;
+}
+
+.auth-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+/* Status and error messages */
+
+.auth-card .message {
+    margin: 16px 0;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.auth-card .error {
+    background: #fff0f0;
+    color: #9c2020;
+}
+
+.auth-card .success {
+    background: #eaf6ee;
+    color: #216347;
+}
+
+/* Smaller screens */
+
+@media (max-width: 600px) {
+    .auth-main {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .auth-card {
+        padding: 24px;
+    }
+}
+
+/* Registration page */
+
+.auth-card-wide {
+    max-width: 520px;
+}
+
+.auth-card .hint {
+    margin: 6px 0 0;
+    color: #53685e;
+    font-size: 14px;
+}

@@ -1,6 +1,8 @@
+
 <%@ page contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"
          import="com.marketplace.model.User" %>
+
 <%!
     private String escapeHtml(Object value) {
         if (value == null) {
@@ -14,6 +16,7 @@
                 .replace("'", "&#39;");
     }
 %>
+
 <%
     User accountUser = (User) session.getAttribute("user");
 
@@ -22,97 +25,194 @@
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My account | Local Services Marketplace</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 48px 16px;
-            background: #f3f6f5;
-            color: #18352b;
-            font-family: Arial, sans-serif;
-        }
-        main {
-            max-width: 620px;
-            margin: auto;
-            padding: 32px;
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 6px 24px #00000012;
-        }
-        h1 { margin-top: 0; }
-        p { line-height: 1.5; }
-        .success {
-            padding: 12px;
-            background: #eaf6ee;
-            color: #216347;
-            border-radius: 6px;
-        }
-        dl { margin: 24px 0; }
-        dt {
-            margin-top: 18px;
-            color: #53685e;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        dd {
-            margin: 6px 0 0;
-            overflow-wrap: anywhere;
-        }
-        button {
-            margin-top: 12px;
-            padding: 12px 24px;
-            border: 0;
-            border-radius: 6px;
-            background: #216347;
-            color: white;
-            font: inherit;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+
+    <title>My Account - Local Services Marketplace</title>
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/common.css">
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/account.css">
 </head>
+
 <body>
-<main>
-    <h1>My account</h1>
 
-    <p class="success" role="status">
-        You are logged in.
-    </p>
+<header class="navbar">
+    <div class="container nav-content">
 
-    <h2>Welcome, <%= escapeHtml(accountUser.getFirstName()) %>!</h2>
+        <a href="${pageContext.request.contextPath}/"
+           class="brand">
+            Local Services
+        </a>
 
-    <dl>
-        <dt>Username</dt>
-        <dd><%= escapeHtml(accountUser.getUsername()) %></dd>
+        <nav>
+            <a href="${pageContext.request.contextPath}/account">
+                My Account
+            </a>
 
-        <dt>Name</dt>
-        <dd><%= escapeHtml(accountUser.getName()) %></dd>
+            <form method="post"
+                  action="${pageContext.request.contextPath}/logout">
 
-        <dt>Email</dt>
-        <dd><%= escapeHtml(accountUser.getEmail()) %></dd>
+                <input type="hidden"
+                       name="csrfToken"
+                       value="<%= escapeHtml(session.getAttribute("csrfToken")) %>">
 
-        <dt>Phone number</dt>
-        <dd><%= accountUser.getPhoneNumber() == null
-                    || accountUser.getPhoneNumber().isBlank()
-                ? "Not provided"
-                : escapeHtml(accountUser.getPhoneNumber()) %></dd>
-    </dl>
+                <button type="submit" class="btn btn-outline">
+                    Log Out
+                </button>
+            </form>
+        </nav>
 
-    <form method="post"
-          action="<%= request.getContextPath() %>/logout">
+    </div>
+</header>
 
-        <input type="hidden" name="csrfToken"
-               value="<%= escapeHtml(
-                       session.getAttribute("csrfToken")) %>">
+<main class="container account-main">
 
-        <button type="submit">Log out</button>
-    </form>
+    <section class="account-card">
+
+        <h1>My Account</h1>
+
+        <% if ("1".equals(request.getParameter("updated"))) { %>
+            <p class="success" role="status">
+                Your profile has been updated successfully.
+            </p>
+        <% } %>
+
+        <!-- VIEW MODE -->
+        <div id="profile-view">
+
+            <dl>
+                <dt>Username</dt>
+                <dd><%= escapeHtml(accountUser.getUsername()) %></dd>
+
+                <dt>Name</dt>
+                <dd><%= escapeHtml(accountUser.getName()) %></dd>
+
+                <dt>Email</dt>
+                <dd><%= escapeHtml(accountUser.getEmail()) %></dd>
+
+                <dt>Phone number</dt>
+                <dd>
+                    <%= accountUser.getPhoneNumber() == null
+                            || accountUser.getPhoneNumber().isBlank()
+                            ? "Not provided"
+                            : escapeHtml(accountUser.getPhoneNumber()) %>
+                </dd>
+
+                <dt>Bio</dt>
+                <dd>
+                    <%= accountUser.getBio() == null
+                            || accountUser.getBio().isBlank()
+                            ? "Not provided"
+                            : escapeHtml(accountUser.getBio()) %>
+                </dd>
+            </dl>
+
+            <button type="button"
+                    id="edit-profile-button"
+                    class="btn btn-primary">
+                Edit Profile
+            </button>
+
+        </div>
+
+        <!-- EDIT MODE -->
+        <section id="profile-edit" class="edit-profile" hidden>
+
+            <form id="edit-profile-form"
+                  method="post"
+                  action="${pageContext.request.contextPath}/account/update">
+
+                <input type="hidden"
+                       name="csrfToken"
+                       value="<%= escapeHtml(session.getAttribute("csrfToken")) %>">
+
+                <label for="firstName">First Name</label>
+                <input type="text"
+                       id="firstName"
+                       name="firstName"
+                       maxlength="100"
+                       value="<%= escapeHtml(accountUser.getFirstName()) %>"
+                       required>
+
+                <label for="lastName">Last Name</label>
+                <input type="text"
+                       id="lastName"
+                       name="lastName"
+                       maxlength="100"
+                       value="<%= escapeHtml(accountUser.getLastName()) %>"
+                       required>
+
+                <label for="email">Email</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       maxlength="255"
+                       value="<%= escapeHtml(accountUser.getEmail()) %>"
+                       required>
+
+                <label for="phone">Phone Number</label>
+                <input type="tel"
+                       id="phone"
+                       name="phone"
+                       maxlength="30"
+                       value="<%= escapeHtml(accountUser.getPhoneNumber()) %>">
+
+                <label for="bio">Bio</label>
+                <textarea id="bio"
+                          name="bio"
+                          rows="4"
+                          maxlength="2000"><%= escapeHtml(accountUser.getBio()) %></textarea>
+
+                <div class="profile-actions">
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <button type="button"
+                            id="cancel-edit-button"
+                            class="btn btn-outline">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+    </section>
+
 </main>
+
+<footer>
+    <p>© 2026 Local Services Marketplace</p>
+</footer>
+
+<script>
+    const profileView = document.getElementById("profile-view");
+    const profileEdit = document.getElementById("profile-edit");
+    const editButton = document.getElementById("edit-profile-button");
+    const cancelButton = document.getElementById("cancel-edit-button");
+    const editForm = document.getElementById("edit-profile-form");
+
+    editButton.addEventListener("click", () => {
+        profileView.hidden = true;
+        profileEdit.hidden = false;
+        document.getElementById("firstName").focus();
+    });
+
+    cancelButton.addEventListener("click", () => {
+        editForm.reset();
+        profileEdit.hidden = true;
+        profileView.hidden = false;
+    });
+</script>
+
 </body>
 </html>

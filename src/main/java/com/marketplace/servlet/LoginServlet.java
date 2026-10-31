@@ -35,8 +35,7 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         if (session.getAttribute("user") != null) {
-            response.sendRedirect(
-                    request.getContextPath() + "/account");
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
 
@@ -92,7 +91,7 @@ public class LoginServlet extends HttpServlet {
                     "csrfToken", UUID.randomUUID().toString());
 
             response.sendRedirect(
-                    request.getContextPath() + "/account");
+                    request.getContextPath() + "/");
 
         } catch (SQLException e) {
             getServletContext().log("Login failed", e);
