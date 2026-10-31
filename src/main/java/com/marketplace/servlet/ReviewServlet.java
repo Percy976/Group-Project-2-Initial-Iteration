@@ -1,3 +1,4 @@
+
 package com.marketplace.servlet;
 
 import com.marketplace.dao.JdbcReviewDAO;
@@ -12,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 @WebServlet("/review")
@@ -26,23 +29,55 @@ public class ReviewServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession(false);
 
-        if (session == null || !(session.getAttribute("user") instanceof User)) {
+        // User must be logged in.
+        if (session == null ||
+                !(session.getAttribute("user") instanceof User)) {
+
             response.sendRedirect(
-                    request.getContextPath() + "/login"
+                    request.getContextPath() + "/login");
+            return;
+        }
+
+        // Validate CSRF token.
+        String submittedCsrf = request.getParameter("csrfToken");
+        Object expectedCsrf = session.getAttribute("csrfToken");
+
+        if (submittedCsrf == null ||
+                !submittedCsrf.equals(expectedCsrf)) {
+
+            response.sendError(
+                    HttpServletResponse.SC_FORBIDDEN,
+                    "Invalid or expired form."
             );
             return;
         }
 
         User user = (User) session.getAttribute("user");
 
+        // Validate the listing ID first.
+        int listingId;
+
+        try {
+            listingId = Integer.parseInt(
+                    request.getParameter("listingId"));
+
+            if (listingId <= 0) {
+                throw new NumberFormatException();
+            }
+
+        } catch (NumberFormatException e) {
+            response.sendRedirect(
+                    request.getContextPath() + "/listings");
+            return;
+        }
+
         try {
             int requestId = Integer.parseInt(
                     request.getParameter("requestId"));
-
-            int listingId = Integer.parseInt(
-                    request.getParameter("listingId"));
 
             int rating = Integer.parseInt(
                     request.getParameter("rating"));
@@ -50,15 +85,15 @@ public class ReviewServlet extends HttpServlet {
             String title = request.getParameter("title");
             String description = request.getParameter("description");
 
-            if (requestId <= 0 || listingId <= 0
-                    || rating < 1 || rating > 5
-                    || title == null || title.isBlank()
-                    || description == null || description.isBlank()) {
+            // Check required fields and valid values.
+            if (requestId <= 0 ||
+                    rating < 1 || rating > 5 ||
+                    title == null || title.isBlank() ||
+                    title.length() > 150 ||
+                    description == null || description.isBlank()) {
 
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Please provide valid review information."
-                );
+                redirectWithError(
+                        request, response, listingId, "invalid");
                 return;
             }
 
@@ -75,29 +110,51 @@ public class ReviewServlet extends HttpServlet {
             boolean created = reviewDAO.create(review);
 
             if (!created) {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "A review could not be submitted. Make sure your service request is completed and belongs to you."
-                );
+                redirectWithError(
+                        request, response, listingId, "ineligible");
                 return;
             }
 
+            // Review successfully created.
             response.sendRedirect(
-                    request.getContextPath() + "/listing?id=" + listingId
+                    request.getContextPath()
+                            + "/listing?id=" + listingId
+                            + "&reviewSuccess=1"
             );
 
         } catch (NumberFormatException e) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid review information."
-            );
+            redirectWithError(
+                    request, response, listingId, "invalid");
 
-        } catch (SQLException | IllegalArgumentException e) {
+        } catch (SQLException e) {
 
+            // MySQL error 1062: duplicate unique-key value.
+            if (e.getErrorCode() == 1062) {
+                redirectWithError(
+                        request, response, listingId, "duplicate");
+                return;
+            }
+
+            // Unexpected database errors are genuine server errors.
             throw new ServletException(
-                    "Failed to submit review.", e
-            );
+                    "Failed to submit review.", e);
         }
+    }
+
+    private void redirectWithError(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int listingId,
+            String errorCode) throws IOException {
+
+        String encodedError = URLEncoder.encode(
+                errorCode, StandardCharsets.UTF_8);
+
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/listing?id=" + listingId
+                        + "&reviewError=" + encodedError
+        );
     }
 }

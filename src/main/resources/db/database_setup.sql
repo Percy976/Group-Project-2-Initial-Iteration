@@ -1,3 +1,4 @@
+
 -- Local Services Marketplace
 -- Group Project 2 database setup
 
@@ -7,7 +8,10 @@ CREATE DATABASE IF NOT EXISTS local_services_marketplace
 
 USE local_services_marketplace;
 
--- Create users first because other tables reference it.
+
+-- =========================================================
+-- USERS
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS users (
                                      user_id INT NOT NULL AUTO_INCREMENT,
@@ -22,14 +26,19 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (user_id),
-    UNIQUE KEY username (username),
-    UNIQUE KEY email (email)
+    UNIQUE KEY uq_users_username (username),
+    UNIQUE KEY uq_users_email (email)
     ) ENGINE=InnoDB
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
 
--- Password recovery tokens. Tokens are stored as SHA-256 hashes, not plaintext.
--- Delete used or expired tokens as part of the password reset workflow.
+
+-- =========================================================
+-- PASSWORD RESET TOKENS
+-- =========================================================
+
+-- Store SHA-256 token hashes, not plaintext reset tokens.
+-- Used tokens are deleted after a successful password reset.
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
                                                      token_id INT NOT NULL AUTO_INCREMENT,
@@ -50,6 +59,11 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
 
+
+-- =========================================================
+-- SERVICE LISTINGS
+-- =========================================================
+
 CREATE TABLE IF NOT EXISTS listings (
                                         listing_id INT NOT NULL AUTO_INCREMENT,
                                         provider_id INT NOT NULL,
@@ -66,7 +80,7 @@ CREATE TABLE IF NOT EXISTS listings (
     ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (listing_id),
-    KEY fk_listings_provider (provider_id),
+    KEY idx_listings_provider (provider_id),
 
     CONSTRAINT fk_listings_provider
     FOREIGN KEY (provider_id)
@@ -74,6 +88,11 @@ CREATE TABLE IF NOT EXISTS listings (
     ) ENGINE=InnoDB
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
+
+
+-- =========================================================
+-- SERVICE REQUESTS
+-- =========================================================
 
 CREATE TABLE IF NOT EXISTS service_requests (
                                                 request_id INT NOT NULL AUTO_INCREMENT,
@@ -93,8 +112,8 @@ CREATE TABLE IF NOT EXISTS service_requests (
     ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (request_id),
-    KEY fk_requests_listing (listing_id),
-    KEY fk_requests_customer (customer_id),
+    KEY idx_requests_listing (listing_id),
+    KEY idx_requests_customer (customer_id),
 
     CONSTRAINT fk_requests_customer
     FOREIGN KEY (customer_id)
@@ -107,30 +126,36 @@ CREATE TABLE IF NOT EXISTS service_requests (
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
 
+
+-- =========================================================
+-- REVIEWS
+-- =========================================================
+
 CREATE TABLE IF NOT EXISTS reviews (
                                        review_id INT NOT NULL AUTO_INCREMENT,
                                        request_id INT NOT NULL,
-                                       reviewer_id INT NOT NULL,
-                                       provider_id INT NOT NULL,
-                                       rating TINYINT NOT NULL,
-                                       comment TEXT,
-                                       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                       listing_id INT NOT NULL,
+                                       customer_id INT NOT NULL,
+                                       title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    rating TINYINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-                                       PRIMARY KEY (review_id),
-    UNIQUE KEY request_id (request_id),
-    KEY fk_reviews_reviewer (reviewer_id),
-    KEY fk_reviews_provider (provider_id),
-
-    CONSTRAINT fk_reviews_provider
-    FOREIGN KEY (provider_id)
-    REFERENCES users (user_id),
+    PRIMARY KEY (review_id),
+    UNIQUE KEY uq_reviews_request (request_id),
+    KEY idx_reviews_listing (listing_id),
+    KEY idx_reviews_customer (customer_id),
 
     CONSTRAINT fk_reviews_request
     FOREIGN KEY (request_id)
     REFERENCES service_requests (request_id),
 
-    CONSTRAINT fk_reviews_reviewer
-    FOREIGN KEY (reviewer_id)
+    CONSTRAINT fk_reviews_listing
+    FOREIGN KEY (listing_id)
+    REFERENCES listings (listing_id),
+
+    CONSTRAINT fk_reviews_customer
+    FOREIGN KEY (customer_id)
     REFERENCES users (user_id),
 
     CONSTRAINT chk_review_rating
@@ -139,6 +164,11 @@ CREATE TABLE IF NOT EXISTS reviews (
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
 
+
+-- =========================================================
+-- REPORTS
+-- =========================================================
+
 CREATE TABLE IF NOT EXISTS reports (
                                        report_id INT NOT NULL AUTO_INCREMENT,
                                        reporter_id INT NOT NULL,
@@ -146,14 +176,18 @@ CREATE TABLE IF NOT EXISTS reports (
                                        listing_id INT DEFAULT NULL,
                                        reason VARCHAR(255) NOT NULL,
     details TEXT,
-    status ENUM('OPEN', 'REVIEWED', 'RESOLVED', 'DISMISSED')
-    NOT NULL DEFAULT 'OPEN',
+    status ENUM(
+                   'OPEN',
+                   'REVIEWED',
+                   'RESOLVED',
+                   'DISMISSED'
+               ) NOT NULL DEFAULT 'OPEN',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (report_id),
-    KEY fk_reports_reporter (reporter_id),
-    KEY fk_reports_reported_user (reported_user_id),
-    KEY fk_reports_listing (listing_id),
+    KEY idx_reports_reporter (reporter_id),
+    KEY idx_reports_reported_user (reported_user_id),
+    KEY idx_reports_listing (listing_id),
 
     CONSTRAINT fk_reports_listing
     FOREIGN KEY (listing_id)
@@ -170,7 +204,10 @@ CREATE TABLE IF NOT EXISTS reports (
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
 
--- Verify the selected database and its tables.
+
+-- =========================================================
+-- VERIFICATION
+-- =========================================================
 
 SELECT DATABASE() AS selected_database;
 

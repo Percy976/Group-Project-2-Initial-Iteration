@@ -28,3 +28,116 @@
 @media (max-width: 600px) {
     .listing-details { margin: 24px auto 48px; padding: 20px; }
 }
+
+
+/* Customer reviews section */
+
+.reviews,
+.review-form {
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding: 32px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.reviews h2,
+.review-form h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* Individual reviews */
+
+.review {
+    padding: 20px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.review h3 {
+    margin: 0 0 8px;
+    color: #252b33;
+}
+
+.review p {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* Review submission form */
+
+.review-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.review-form label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.review-form input,
+.review-form textarea,
+.review-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #aabbb3;
+    border-radius: 6px;
+    background: white;
+    color: #252b33;
+    font: inherit;
+}
+
+.review-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.review-form input:focus,
+.review-form textarea:focus,
+.review-form select:focus {
+    outline: 2px solid #176345;
+    outline-offset: 2px;
+}
+
+.review-form button[type="submit"] {
+    align-self: flex-start;
+    margin-top: 24px;
+    padding: 12px 24px;
+}
+
+/* Mobile layout */
+
+@media (max-width: 600px) {
+    .reviews,
+    .review-form {
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .review-form button[type="submit"] {
+        width: 100%;
+    }
+}
+
+/* Review submission feedback */
+
+.review-form .message {
+    padding: 12px;
+    margin: 16px 0 20px;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+
+.review-form .message.error {
+    background: #fff0f0;
+    color: #9c2020;
+}
+
+.review-form .message.success {
+    background: #eaf6ee;
+    color: #216347;
+}

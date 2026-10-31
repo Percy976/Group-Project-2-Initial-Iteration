@@ -197,8 +197,50 @@
 
         <h2>Write a Review</h2>
 
+
+        <%
+            String reviewError = request.getParameter("reviewError");
+        %>
+
+        <% if ("invalid".equals(reviewError)) { %>
+
+            <p class="message error" role="alert">
+                Please provide valid review information.
+                All required fields must be completed.
+            </p>
+
+        <% } else if ("ineligible".equals(reviewError)) { %>
+
+            <p class="message error" role="alert">
+                Your review could not be submitted.
+                Make sure the service request belongs to you,
+                matches this listing, and has been completed.
+            </p>
+
+        <% } else if ("duplicate".equals(reviewError)) { %>
+
+            <p class="message error" role="alert">
+                You have already submitted a review for
+                this service request.
+            </p>
+
+        <% } %>
+
+        <% if ("1".equals(request.getParameter("reviewSuccess"))) { %>
+
+            <p class="message success" role="status">
+                Your review was submitted successfully.
+            </p>
+
+        <% } %>
+
+
         <form action="${pageContext.request.contextPath}/review"
               method="post">
+
+            <input type="hidden"
+                   name="csrfToken"
+                   value="<%= escapeHtml((String) session.getAttribute("csrfToken")) %>">
 
             <input type="hidden"
                    name="listingId"
