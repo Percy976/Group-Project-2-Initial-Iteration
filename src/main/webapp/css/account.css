@@ -1,0 +1,115 @@
+
+/* Account page */
+
+.account-main {
+    flex: 1;
+    width: 100%;
+    padding-top: 48px;
+    padding-bottom: 80px;
+}
+
+.account-card {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 32px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px #00000012;
+}
+
+.account-card h1 {
+    margin-top: 0;
+}
+
+.account-card h2 {
+    margin-top: 28px;
+}
+
+.account-card .success {
+    padding: 12px;
+    background: #eaf6ee;
+    color: #216347;
+    border-radius: 6px;
+}
+
+.account-card dl {
+    margin: 24px 0;
+}
+
+.account-card dt {
+    margin-top: 18px;
+    color: #53685e;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.account-card dd {
+    margin: 6px 0 0;
+    overflow-wrap: anywhere;
+}
+
+.account-card button {
+    margin-top: 12px;
+}
+
+
+/* Edit profile form */
+
+.edit-profile {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.edit-profile form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-profile label {
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+.edit-profile input,
+.edit-profile textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5d1;
+    border-radius: 6px;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.edit-profile textarea {
+    resize: vertical;
+}
+
+.edit-profile button {
+    align-self: flex-start;
+    margin-top: 20px;
+}
+
+/* Ensure hidden sections stay hidden */
+[hidden] {
+    display: none !important;
+}
+
+/* Edit mode buttons */
+.profile-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.profile-actions button {
+    margin-top: 0;
+}
+
+/* Preserve line breaks in the bio */
+.account-card dd {
+    white-space: pre-line;
+}

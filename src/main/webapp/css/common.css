@@ -94,3 +94,18 @@ footer {
         gap: 12px;
     }
 }
+
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar nav form {
+    margin: 0;
+}
+
+.navbar nav button {
+    font: inherit;
+    cursor: pointer;
+}
