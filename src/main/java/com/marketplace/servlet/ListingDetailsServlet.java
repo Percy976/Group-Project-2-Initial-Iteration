@@ -1,8 +1,7 @@
-
 package com.marketplace.servlet;
 
-import com.marketplace.dao.JdbcListingDAO;
-import com.marketplace.model.ServiceListing;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,8 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import com.marketplace.dao.JdbcListingDAO;
+import com.marketplace.dao.JdbcReviewDAO;
+import com.marketplace.model.ServiceListing;
 
 @WebServlet("/listing")
 public class ListingDetailsServlet extends HttpServlet {
@@ -19,6 +19,7 @@ public class ListingDetailsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final JdbcListingDAO listingDAO = new JdbcListingDAO();
+    private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -26,7 +27,6 @@ public class ListingDetailsServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String idParameter = request.getParameter("id");
-
         int listingId;
 
         try {
@@ -60,6 +60,10 @@ public class ListingDetailsServlet extends HttpServlet {
             }
 
             request.setAttribute("listing", listing);
+            request.setAttribute("reviews",
+                    reviewDAO.findByListingId(listingId));
+            request.setAttribute("averageRating",
+                    reviewDAO.findAverageRatingByListingId(listingId));
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/listing-details.jsp"
@@ -67,7 +71,7 @@ public class ListingDetailsServlet extends HttpServlet {
 
         } catch (SQLException e) {
             throw new ServletException(
-                    "Failed to retrieve service listing.", e
+                    "Failed to retrieve listing or reviews.", e
             );
         }
     }
