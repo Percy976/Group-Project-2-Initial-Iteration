@@ -47,8 +47,14 @@
         </a>
 
         <nav>
-            <a href="#">Log In</a>
-            <a href="#" class="btn btn-outline">Sign Up</a>
+            <a href="${pageContext.request.contextPath}/login">
+                Log In
+            </a>
+
+            <a href="${pageContext.request.contextPath}/register"
+               class="btn btn-outline">
+                Sign Up
+            </a>
         </nav>
 
     </div>
@@ -87,9 +93,20 @@
             <% } %>
         </p>
 
-        <button type="button" class="btn btn-primary" disabled>
-            Request Service
-        </button>
+        <% if (session.getAttribute("user") == null) { %>
+
+            <a href="${pageContext.request.contextPath}/login"
+               class="btn btn-primary">
+                Request Service
+            </a>
+
+        <% } else { %>
+
+            <button type="button" class="btn btn-primary" disabled>
+                Request Service
+            </button>
+
+        <% } %>
 
     </section>
 
