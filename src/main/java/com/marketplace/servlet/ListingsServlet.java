@@ -1,8 +1,8 @@
-
 package com.marketplace.servlet;
 
-import com.marketplace.dao.JdbcListingDAO;
-import com.marketplace.model.ServiceListing;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
+import com.marketplace.model.ServiceListing;
+import com.marketplace.service.ListingService;
 
 @WebServlet(urlPatterns = {"", "/listings"})
 public class ListingsServlet extends HttpServlet {
@@ -20,7 +19,7 @@ public class ListingsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final int PAGE_SIZE = 30;
 
-    private final JdbcListingDAO listingDAO = new JdbcListingDAO();
+    private final ListingService listingService = new ListingService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -71,7 +70,7 @@ public class ListingsServlet extends HttpServlet {
 
         try {
             List<ServiceListing> listings =
-                    listingDAO.findActive(
+                    listingService.findActive(
                             PAGE_SIZE, offset, searchQuery);
 
             request.setAttribute("listings", listings);

@@ -81,6 +81,12 @@
 <main>
     <h1>My account</h1>
 
+    <p style="margin-bottom: 20px;">
+    <a href="<%= request.getContextPath() %>/listings">
+        &larr; Back to Home
+    </a>
+    </p>
+
     <p class="success" role="status">
         You are logged in.
     </p>

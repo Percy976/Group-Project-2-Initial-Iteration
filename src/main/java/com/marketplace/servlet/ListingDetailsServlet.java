@@ -9,17 +9,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.marketplace.dao.JdbcListingDAO;
-import com.marketplace.dao.JdbcReviewDAO;
 import com.marketplace.model.ServiceListing;
+import com.marketplace.service.ListingService;
+import com.marketplace.service.ReviewService;
 
 @WebServlet("/listing")
 public class ListingDetailsServlet extends HttpServlet {
 
+
     private static final long serialVersionUID = 1L;
 
-    private final JdbcListingDAO listingDAO = new JdbcListingDAO();
-    private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
+    private final ListingService listingService = new ListingService();
+    private final ReviewService reviewService = new ReviewService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -48,8 +49,9 @@ public class ListingDetailsServlet extends HttpServlet {
             return;
         }
 
+        
         try {
-            ServiceListing listing = listingDAO.findById(listingId);
+            ServiceListing listing = listingService.findById(listingId);
 
             if (listing == null) {
                 response.sendError(
@@ -61,9 +63,9 @@ public class ListingDetailsServlet extends HttpServlet {
 
             request.setAttribute("listing", listing);
             request.setAttribute("reviews",
-                    reviewDAO.findByListingId(listingId));
+                    reviewService.findByListingId(listingId));
             request.setAttribute("averageRating",
-                    reviewDAO.findAverageRatingByListingId(listingId));
+                    reviewService.findAverageRatingByListingId(listingId));
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/listing-details.jsp"

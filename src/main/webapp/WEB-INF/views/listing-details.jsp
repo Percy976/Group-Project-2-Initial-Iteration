@@ -100,20 +100,47 @@
             <% } %>
         </p>
 
-        <% if (session.getAttribute("user") == null) { %>
 
-            <a href="${pageContext.request.contextPath}/login"
-               class="btn btn-primary">
-                Request Service
-            </a>
+<% if (session.getAttribute("user") == null) { %>
 
-        <% } else { %>
+    <a href="${pageContext.request.contextPath}/login"
+       class="btn btn-primary">
+        Request Service
+    </a>
 
-            <button type="button" class="btn btn-primary" disabled>
-                Request Service
+<% } else { %>
+
+    <section class="request-form">
+
+        <h2>Request This Service</h2>
+
+        <form action="${pageContext.request.contextPath}/service-request"
+              method="post">
+
+            <input type="hidden"
+                   name="listingId"
+                   value="<%= listing.getListingId() %>">
+
+            <label for="jobDetails">
+                Describe the work you need done
+            </label>
+
+            <textarea id="jobDetails"
+                      name="jobDetails"
+                      rows="5"
+                      maxlength="5000"
+                      required></textarea>
+
+            <button type="submit" class="btn btn-primary">
+                Submit Service Request
             </button>
 
+                </form>
+
+            </section>
+
         <% } %>
+
 
     </section>
 

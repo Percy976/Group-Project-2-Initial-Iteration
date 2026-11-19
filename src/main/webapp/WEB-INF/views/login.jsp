@@ -123,6 +123,12 @@
         <button type="submit">Log in</button>
     </form>
 
+    <p style="text-align: center; margin-top: 20px;">
+    <a href="<%= request.getContextPath() %>/listings">
+        &larr; Back to Home
+    </a>
+    </p>
+
     <p>New here?
         <a href="<%= request.getContextPath() %>/register">
             Create an account
