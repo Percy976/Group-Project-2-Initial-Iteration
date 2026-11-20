@@ -1,14 +1,10 @@
-
 package com.marketplace.servlet;
 
-import com.marketplace.dao.JdbcListingDAO;
 import com.marketplace.model.User;
+import com.marketplace.service.ListingCreationService;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.SQLException;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -23,10 +19,8 @@ public class CreateListingServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Set<String> PRICE_TYPES =
-            Set.of("FIXED", "HOURLY", "NEGOTIABLE");
-
-    private final JdbcListingDAO listingDAO = new JdbcListingDAO();
+    private final ListingCreationService listingService =
+            new ListingCreationService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -76,36 +70,15 @@ public class CreateListingServlet extends HttpServlet {
         }
 
         try {
-            String title = requiredText(
-                    request.getParameter("title"), "Title", 150);
-
-            String description = requiredText(
-                    request.getParameter("description"),
-                    "Description", 10000);
-
-            String category = requiredText(
-                    request.getParameter("category"), "Category", 100);
-
-            String priceType = text(request.getParameter("priceType"));
-
-            if (!PRICE_TYPES.contains(priceType)) {
-                throw new IllegalArgumentException(
-                        "Select a valid price type.");
-            }
-
-            BigDecimal price = parsePrice(
-                    request.getParameter("price"), priceType);
-
             // Ownership comes from the authenticated user.
-            int listingId = listingDAO.create(
+            int listingId = listingService.create(
                     user.getUserId(),
-                    title,
-                    description,
-                    category,
-                    price,
-                    priceType);
+                    request.getParameter("title"),
+                    request.getParameter("description"),
+                    request.getParameter("category"),
+                    request.getParameter("price"),
+                    request.getParameter("priceType"));
 
-            // Open the newly created listing.
             response.sendRedirect(
                     request.getContextPath()
                             + "/listing?id=" + listingId);
@@ -153,52 +126,5 @@ public class CreateListingServlet extends HttpServlet {
         request.getRequestDispatcher(
                         "/WEB-INF/views/create-listing.jsp")
                 .forward(request, response);
-    }
-
-    private static String text(String value) {
-        return value == null ? "" : value.trim();
-    }
-
-    private static String requiredText(
-            String value, String label, int maximumLength) {
-
-        String cleaned = text(value);
-
-        if (cleaned.isEmpty()) {
-            throw new IllegalArgumentException(
-                    label + " is required.");
-        }
-
-        if (cleaned.length() > maximumLength) {
-            throw new IllegalArgumentException(
-                    label + " must be "
-                            + maximumLength + " characters or fewer.");
-        }
-
-        return cleaned;
-    }
-
-    private static BigDecimal parsePrice(
-            String value, String priceType) {
-
-        String cleaned = text(value);
-
-        if (cleaned.isEmpty()) {
-            if ("NEGOTIABLE".equals(priceType)) {
-                return null;
-            }
-
-            throw new IllegalArgumentException(
-                    "Enter a price for fixed or hourly services.");
-        }
-
-        if (!cleaned.matches("[0-9]{1,8}(\\.[0-9]{1,2})?")) {
-            throw new IllegalArgumentException(
-                    "Enter a valid price with up to two decimal places "
-                            + "and a maximum of 99999999.99.");
-        }
-
-        return new BigDecimal(cleaned)
-                .setScale(2, RoundingMode.UNNECESSARY);
     }
 }
