@@ -40,6 +40,78 @@ public class JdbcReviewDAO {
     }
 
 
+
+    /**
+     * Summarizes whether a customer may create another review for this listing.
+     * Each completed service request may have at most one review.
+     */
+    public enum ReviewEligibility {
+        NO_REQUEST, NOT_COMPLETED, ALREADY_REVIEWED, ELIGIBLE
+    }
+
+    public ReviewEligibility getReviewEligibility(int listingId, int customerId)
+            throws SQLException {
+        String sql = """
+                SELECT sr.status, r.review_id
+                FROM service_requests sr
+                LEFT JOIN reviews r ON r.request_id = sr.request_id
+                WHERE sr.listing_id = ? AND sr.customer_id = ?
+                """;
+
+        boolean hasRequest = false;
+        boolean hasReviewedCompletedRequest = false;
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, listingId);
+            statement.setInt(2, customerId);
+            try (ResultSet results = statement.executeQuery()) {
+                while (results.next()) {
+                    hasRequest = true;
+                    if ("COMPLETED".equals(results.getString("status"))) {
+                        if (results.getObject("review_id") == null) {
+                            return ReviewEligibility.ELIGIBLE;
+                        }
+                        hasReviewedCompletedRequest = true;
+                    }
+                }
+            }
+        }
+        if (!hasRequest) return ReviewEligibility.NO_REQUEST;
+        if (hasReviewedCompletedRequest) return ReviewEligibility.ALREADY_REVIEWED;
+        return ReviewEligibility.NOT_COMPLETED;
+    }
+
+    /**
+     * Selects an eligible, unreviewed completed request on the server.
+     * No request ID supplied by the browser is trusted or required.
+     */
+    public boolean createForEligibleRequest(int listingId, int customerId,
+                                            String title, String description, int rating)
+            throws SQLException {
+        String sql = """
+                INSERT INTO reviews
+                    (request_id, listing_id, customer_id, title, description, rating)
+                SELECT sr.request_id, sr.listing_id, sr.customer_id, ?, ?, ?
+                FROM service_requests sr
+                LEFT JOIN reviews r ON r.request_id = sr.request_id
+                WHERE sr.listing_id = ?
+                  AND sr.customer_id = ?
+                  AND sr.status = 'COMPLETED'
+                  AND r.review_id IS NULL
+                ORDER BY sr.request_id ASC
+                LIMIT 1
+                """;
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, title);
+            statement.setString(2, description);
+            statement.setInt(3, rating);
+            statement.setInt(4, listingId);
+            statement.setInt(5, customerId);
+            return statement.executeUpdate() > 0;
+        }
+    }
+
     /**
      * Updates a review only if it belongs to the current customer and listing.
      */

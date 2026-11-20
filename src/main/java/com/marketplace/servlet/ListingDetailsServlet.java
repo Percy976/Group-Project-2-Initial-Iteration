@@ -2,6 +2,9 @@ package com.marketplace.servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+
+import com.marketplace.model.ServiceReview;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.marketplace.dao.JdbcListingDAO;
 import com.marketplace.dao.JdbcReviewDAO;
 import com.marketplace.model.ServiceListing;
+import com.marketplace.model.User;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/listing")
 public class ListingDetailsServlet extends HttpServlet {
@@ -59,9 +64,27 @@ public class ListingDetailsServlet extends HttpServlet {
                 return;
             }
 
+            HttpSession session = request.getSession(false);
+            User currentUser = session != null && session.getAttribute("user") instanceof User
+                    ? (User) session.getAttribute("user") : null;
+            JdbcReviewDAO.ReviewEligibility reviewEligibility = null;
+            if (currentUser != null && currentUser.getUserId() != listing.getProviderId()) {
+                reviewEligibility = reviewDAO.getReviewEligibility(listingId, currentUser.getUserId());
+            }
+            request.setAttribute("reviewEligibility", reviewEligibility);
+
+            List<ServiceReview> reviews = reviewDAO.findByListingId(listingId);
+            if (currentUser != null) {
+                int currentUserId = currentUser.getUserId();
+                // Put this customer's reviews first without changing the
+                // existing newest-first order within either group.
+                reviews.sort((left, right) -> Boolean.compare(
+                        right.getCustomerId() == currentUserId,
+                        left.getCustomerId() == currentUserId));
+            }
+
             request.setAttribute("listing", listing);
-            request.setAttribute("reviews",
-                    reviewDAO.findByListingId(listingId));
+            request.setAttribute("reviews", reviews);
             request.setAttribute("averageRating",
                     reviewDAO.findAverageRatingByListingId(listingId));
 

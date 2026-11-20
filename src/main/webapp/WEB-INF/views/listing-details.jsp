@@ -3,6 +3,7 @@
 <%@ page import="com.marketplace.model.ServiceListing" %>
 <%@ page import="com.marketplace.model.ServiceReview" %>
 <%@ page import="com.marketplace.model.User" %>
+<%@ page import="com.marketplace.dao.JdbcReviewDAO" %>
 <%@ page import="java.util.List" %>
 
 <%!
@@ -35,12 +36,8 @@
     boolean isOwner = currentUser != null
             && currentUser.getUserId() == listing.getProviderId();
 
-    String requestedReviewId = request.getParameter("requestId");
-
-    if (requestedReviewId == null
-            || !requestedReviewId.matches("[1-9][0-9]*")) {
-        requestedReviewId = "";
-    }
+    JdbcReviewDAO.ReviewEligibility reviewEligibility =
+            (JdbcReviewDAO.ReviewEligibility) request.getAttribute("reviewEligibility");
 
     String csrf = escapeHtml(session.getAttribute("csrfToken"));
 %>
@@ -348,41 +345,26 @@
 
     </section>
 
-    <% if (currentUser != null && !isOwner) { %>
+    <section class="review-form" id="review-form">
+        <h2>Write a Review</h2>
 
-        <section class="review-form" id="review-form">
-
-            <h2>Write a Review</h2>
-
-            <p>
-                You can review this service after your request
-                has been marked completed.
-            </p>
-
-            <form method="post"
-                  action="${pageContext.request.contextPath}/review">
-
-                <input type="hidden"
-                       name="csrfToken"
-                       value="<%= csrf %>">
-
-                <input type="hidden"
-                       name="listingId"
-                       value="<%= listing.getListingId() %>">
-
-                <label for="requestId">
-                    Completed Request ID
-                </label>
-
-                <input type="number"
-                       id="requestId"
-                       name="requestId"
-                       min="1"
-                       value="<%= escapeHtml(requestedReviewId) %>"
-                       required>
+        <% if (currentUser == null) { %>
+            <p>Log in to review a service after completing a service request.</p>
+        <% } else if (isOwner) { %>
+            <p>You cannot review your own service listing.</p>
+        <% } else if (reviewEligibility == JdbcReviewDAO.ReviewEligibility.NO_REQUEST) { %>
+            <p>You cannot write a review because you have not requested this service.</p>
+        <% } else if (reviewEligibility == JdbcReviewDAO.ReviewEligibility.NOT_COMPLETED) { %>
+            <p>You can review this service after your service request has been marked completed.</p>
+        <% } else if (reviewEligibility == JdbcReviewDAO.ReviewEligibility.ALREADY_REVIEWED) { %>
+            <p>You have already reviewed your completed service request. You can edit or delete your review above.</p>
+        <% } else if (reviewEligibility == JdbcReviewDAO.ReviewEligibility.ELIGIBLE) { %>
+            <form method="post" action="${pageContext.request.contextPath}/review">
+                <input type="hidden" name="csrfToken" value="<%= csrf %>">
+                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="listingId" value="<%= listing.getListingId() %>">
 
                 <label for="rating">Rating</label>
-
                 <select id="rating" name="rating" required>
                     <option value="">Choose a rating</option>
                     <option value="5">5 - Excellent</option>
@@ -393,22 +375,15 @@
                 </select>
 
                 <label for="title">Review Title</label>
-
                 <input type="text" id="title" name="title" maxlength="150" required>
 
                 <label for="description">Review Description</label>
-
                 <textarea id="description" name="description" rows="5" required></textarea>
 
-                <button type="submit" class="btn btn-primary">
-                    Submit Review
-                </button>
-
+                <button type="submit" class="btn btn-primary">Submit Review</button>
             </form>
-
-        </section>
-
-    <% } %>
+        <% } %>
+    </section>
 
 </main>
 

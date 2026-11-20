@@ -83,14 +83,10 @@ public class ReviewServlet extends HttpServlet {
                               HttpServletResponse response,
                               int listingId, User user)
             throws SQLException, IOException {
-        int requestId = positiveInt(request.getParameter("requestId"));
         ReviewFields fields = validatedFields(request);
 
-        ServiceReview review = new ServiceReview(0, requestId, listingId,
-                user.getUserId(), fields.title(), fields.description(),
-                fields.rating());
-
-        if (!reviewDAO.create(review)) {
+        if (!reviewDAO.createForEligibleRequest(listingId, user.getUserId(),
+                fields.title(), fields.description(), fields.rating())) {
             redirectWithError(request, response, listingId, "ineligible");
             return;
         }
