@@ -1,0 +1,27 @@
+/* My Reviews page */
+.reviews-main { padding-top: 48px; padding-bottom: 80px; }
+.reviews-card { max-width: 850px; margin: 0 auto; padding: 32px; background: white; border: 1px solid #e5e7eb; border-radius: 14px; }
+.reviews-card h1 { margin: 12px 0 0; }
+.review-item { border-top: 1px solid #e5e7eb; padding: 24px 0; }
+.service-name { margin: 0 0 12px; font-size: 21px; }
+.service-name a { color: #176345; text-decoration: none; }
+.service-name a:hover { text-decoration: underline; }
+.review-rating { margin: 0 0 12px; font-weight: 700; color: #38424c; }
+.review-title { margin: 0 0 10px; font-size: 18px; }
+.review-description { margin: 0 0 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; }
+.review-actions .btn { font-family: inherit; line-height: normal; }
+.review-editor form { display: flex; flex-direction: column; gap: 10px; max-width: 600px; }
+.review-editor label { font-weight: 600; margin-top: 8px; }
+.review-editor input, .review-editor textarea, .review-editor select { padding: 12px; border: 1px solid #aabbb3; border-radius: 6px; font: inherit; background: white; width: 100%; box-sizing: border-box; }
+.review-editor textarea { resize: vertical; }
+.review-editor .review-actions { margin-top: 12px; }
+.btn-outline:hover { background: #edf6f1; }
+.btn-danger { border: 1px solid #a51c1c; background: white; color: #a51c1c; }
+.btn-danger:hover { background: #fff0f0; }
+.delete-form { display: none; }
+.review-view[hidden], .review-editor[hidden] { display: none !important; }
+.message { border-radius: 6px; padding: 12px; margin: 16px 0; }
+.message.success { background: #eaf6ee; color: #216347; }
+.message.error { background: #fff0f0; color: #9c2020; }
+@media (max-width: 600px) { .reviews-main { padding-top: 24px; padding-bottom: 48px; } .reviews-card { padding: 20px; } }

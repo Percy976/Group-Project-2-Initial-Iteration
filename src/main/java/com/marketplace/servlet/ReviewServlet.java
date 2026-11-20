@@ -1,4 +1,3 @@
-
 package com.marketplace.servlet;
 
 import com.marketplace.dao.JdbcReviewDAO;
@@ -21,7 +20,6 @@ import java.sql.SQLException;
 public class ReviewServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
     private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
 
     @Override
@@ -30,131 +28,152 @@ public class ReviewServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
         HttpSession session = request.getSession(false);
 
-        // User must be logged in.
-        if (session == null ||
-                !(session.getAttribute("user") instanceof User)) {
-
-            response.sendRedirect(
-                    request.getContextPath() + "/login");
+        if (session == null || !(session.getAttribute("user") instanceof User)) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Validate CSRF token.
+        // All review changes must come from a valid session form.
         String submittedCsrf = request.getParameter("csrfToken");
         Object expectedCsrf = session.getAttribute("csrfToken");
+        if (!(expectedCsrf instanceof String)
+                || submittedCsrf == null
+                || !submittedCsrf.equals(expectedCsrf)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Invalid or expired form.");
+            return;
+        }
 
-        if (submittedCsrf == null ||
-                !submittedCsrf.equals(expectedCsrf)) {
-
-            response.sendError(
-                    HttpServletResponse.SC_FORBIDDEN,
-                    "Invalid or expired form."
-            );
+        int listingId;
+        try {
+            listingId = positiveInt(request.getParameter("listingId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/listings");
             return;
         }
 
         User user = (User) session.getAttribute("user");
-
-        // Validate the listing ID first.
-        int listingId;
-
-        try {
-            listingId = Integer.parseInt(
-                    request.getParameter("listingId"));
-
-            if (listingId <= 0) {
-                throw new NumberFormatException();
-            }
-
-        } catch (NumberFormatException e) {
-            response.sendRedirect(
-                    request.getContextPath() + "/listings");
-            return;
+        String action = request.getParameter("action");
+        if (action == null || action.isBlank()) {
+            action = "create";  // Preserve the existing review submission form.
         }
 
         try {
-            int requestId = Integer.parseInt(
-                    request.getParameter("requestId"));
-
-            int rating = Integer.parseInt(
-                    request.getParameter("rating"));
-
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-
-            // Check required fields and valid values.
-            if (requestId <= 0 ||
-                    rating < 1 || rating > 5 ||
-                    title == null || title.isBlank() ||
-                    title.length() > 150 ||
-                    description == null || description.isBlank()) {
-
-                redirectWithError(
-                        request, response, listingId, "invalid");
-                return;
+            switch (action) {
+                case "create" -> createReview(request, response, listingId, user);
+                case "update" -> updateReview(request, response, listingId, user);
+                case "delete" -> deleteReview(request, response, listingId, user);
+                default -> redirectWithError(request, response, listingId, "invalid");
             }
-
-            ServiceReview review = new ServiceReview(
-                    0,
-                    requestId,
-                    listingId,
-                    user.getUserId(),
-                    title.trim(),
-                    description.trim(),
-                    rating
-            );
-
-            boolean created = reviewDAO.create(review);
-
-            if (!created) {
-                redirectWithError(
-                        request, response, listingId, "ineligible");
-                return;
-            }
-
-            // Review successfully created.
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/listing?id=" + listingId
-                            + "&reviewSuccess=1"
-            );
-
-        } catch (NumberFormatException e) {
-
-            redirectWithError(
-                    request, response, listingId, "invalid");
-
+        } catch (IllegalArgumentException e) {
+            redirectWithError(request, response, listingId, "invalid");
         } catch (SQLException e) {
-
-            // MySQL error 1062: duplicate unique-key value.
-            if (e.getErrorCode() == 1062) {
-                redirectWithError(
-                        request, response, listingId, "duplicate");
+            // Duplicate review for the same completed request.
+            if ("create".equals(action) && e.getErrorCode() == 1062) {
+                redirectWithError(request, response, listingId, "duplicate");
                 return;
             }
-
-            // Unexpected database errors are genuine server errors.
-            throw new ServletException(
-                    "Failed to submit review.", e);
+            throw new ServletException("Failed to manage review.", e);
         }
     }
 
-    private void redirectWithError(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            int listingId,
-            String errorCode) throws IOException {
+    private void createReview(HttpServletRequest request,
+                              HttpServletResponse response,
+                              int listingId, User user)
+            throws SQLException, IOException {
+        int requestId = positiveInt(request.getParameter("requestId"));
+        ReviewFields fields = validatedFields(request);
 
-        String encodedError = URLEncoder.encode(
-                errorCode, StandardCharsets.UTF_8);
+        ServiceReview review = new ServiceReview(0, requestId, listingId,
+                user.getUserId(), fields.title(), fields.description(),
+                fields.rating());
 
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/listing?id=" + listingId
-                        + "&reviewError=" + encodedError
-        );
+        if (!reviewDAO.create(review)) {
+            redirectWithError(request, response, listingId, "ineligible");
+            return;
+        }
+        redirectWithSuccess(request, response, listingId, "created");
+    }
+
+    private void updateReview(HttpServletRequest request,
+                              HttpServletResponse response,
+                              int listingId, User user)
+            throws SQLException, IOException {
+        int reviewId = positiveInt(request.getParameter("reviewId"));
+        ReviewFields fields = validatedFields(request);
+
+        if (!reviewDAO.update(reviewId, listingId, user.getUserId(),
+                fields.title(), fields.description(), fields.rating())) {
+            redirectWithError(request, response, listingId, "notowner");
+            return;
+        }
+        redirectWithSuccess(request, response, listingId, "updated");
+    }
+
+    private void deleteReview(HttpServletRequest request,
+                              HttpServletResponse response,
+                              int listingId, User user)
+            throws SQLException, IOException {
+        int reviewId = positiveInt(request.getParameter("reviewId"));
+        if (!reviewDAO.delete(reviewId, listingId, user.getUserId())) {
+            redirectWithError(request, response, listingId, "notowner");
+            return;
+        }
+        redirectWithSuccess(request, response, listingId, "deleted");
+    }
+
+    private static int positiveInt(String value) {
+        int parsed = Integer.parseInt(value);
+        if (parsed <= 0) throw new NumberFormatException("Expected positive ID");
+        return parsed;
+    }
+
+    private static ReviewFields validatedFields(HttpServletRequest request) {
+        int rating = Integer.parseInt(request.getParameter("rating"));
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+
+        if (rating < 1 || rating > 5 || title == null
+                || description == null) {
+            throw new IllegalArgumentException("Invalid review fields");
+        }
+        title = title.trim();
+        description = description.trim();
+        if (title.isEmpty() || title.length() > 150 || description.isEmpty()) {
+            throw new IllegalArgumentException("Invalid review length");
+        }
+        return new ReviewFields(title, description, rating);
+    }
+
+    private record ReviewFields(String title, String description, int rating) { }
+
+    private void redirectWithError(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   int listingId, String errorCode) throws IOException {
+        if ("my-reviews".equals(request.getParameter("returnTo"))) {
+            response.sendRedirect(request.getContextPath() + "/account/reviews?reviewError="
+                    + URLEncoder.encode(errorCode, StandardCharsets.UTF_8));
+            return;
+        }
+        response.sendRedirect(request.getContextPath()
+                + "/listing?id=" + listingId + "&reviewError="
+                + URLEncoder.encode(errorCode, StandardCharsets.UTF_8)
+                + "#reviews");
+    }
+
+    private void redirectWithSuccess(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     int listingId, String result) throws IOException {
+        if ("my-reviews".equals(request.getParameter("returnTo"))) {
+            response.sendRedirect(request.getContextPath() + "/account/reviews?reviewSuccess="
+                    + URLEncoder.encode(result, StandardCharsets.UTF_8));
+            return;
+        }
+        response.sendRedirect(request.getContextPath()
+                + "/listing?id=" + listingId + "&reviewSuccess="
+                + URLEncoder.encode(result, StandardCharsets.UTF_8)
+                + "#reviews");
     }
 }

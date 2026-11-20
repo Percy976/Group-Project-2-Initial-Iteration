@@ -80,10 +80,6 @@
                     My Account
                 </a>
 
-                <a href="${pageContext.request.contextPath}/requests">
-                    Service Requests
-                </a>
-
                 <form method="post"
                       action="${pageContext.request.contextPath}/logout">
 
@@ -234,7 +230,7 @@
 
     </section>
 
-    <section class="reviews">
+    <section class="reviews" id="reviews">
 
         <h2>Customer Reviews</h2>
 
@@ -251,33 +247,103 @@
 
         <% } %>
 
+        <% String reviewFeedback = request.getParameter("reviewSuccess"); %>
+        <% if ("1".equals(reviewFeedback) || "created".equals(reviewFeedback)) { %>
+            <p class="review-feedback success" role="status">Your review was submitted successfully.</p>
+        <% } else if ("updated".equals(reviewFeedback)) { %>
+            <p class="review-feedback success" role="status">Your review was updated successfully.</p>
+        <% } else if ("deleted".equals(reviewFeedback)) { %>
+            <p class="review-feedback success" role="status">Your review was deleted successfully.</p>
+        <% } %>
+
+        <% String reviewErrorMessage = request.getParameter("reviewError"); %>
+        <% if ("notowner".equals(reviewErrorMessage)) { %>
+            <p class="review-feedback error" role="alert">Review not found, or you do not have permission to modify it.</p>
+        <% } else if ("invalid".equals(reviewErrorMessage)) { %>
+            <p class="review-feedback error" role="alert">Please provide valid review information.</p>
+        <% } else if ("ineligible".equals(reviewErrorMessage)) { %>
+            <p class="review-feedback error" role="alert">You can only review your own completed service requests for this listing.</p>
+        <% } else if ("duplicate".equals(reviewErrorMessage)) { %>
+            <p class="review-feedback error" role="alert">You have already reviewed this request.</p>
+        <% } %>
+
         <% if (reviews != null && !reviews.isEmpty()) { %>
+            <% for (ServiceReview review : reviews) {
+                int reviewId = review.getReviewId();
+                boolean ownsReview = currentUser != null
+                        && currentUser.getUserId() == review.getCustomerId();
+            %>
+                <article class="review">
+                    <div id="review-view-<%= reviewId %>" class="review-view">
+                        <p class="review-rating"><%= review.getRating() %>/5</p>
+                        <h3 class="review-title"><%= escapeHtml(review.getTitle()) %></h3>
+                        <p class="review-description"><%= escapeHtml(review.getDescription()) %></p>
 
-            <% for (ServiceReview review : reviews) { %>
+                        <% if (ownsReview) { %>
+                            <div class="review-actions">
+                                <button type="button" class="btn btn-outline"
+                                        onclick="toggleReviewEdit(<%= reviewId %>, true)">Edit</button>
+                                <button type="submit" form="delete-review-<%= reviewId %>"
+                                        class="btn btn-danger">Delete</button>
+                            </div>
+                        <% } %>
+                    </div>
 
-                <div class="review">
+                    <% if (ownsReview) { %>
+                        <div id="review-editor-<%= reviewId %>" class="review-editor" hidden>
+                            <form method="post" action="${pageContext.request.contextPath}/review">
+                                <input type="hidden" name="csrfToken" value="<%= csrf %>">
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="listingId" value="<%= listing.getListingId() %>">
+                                <input type="hidden" name="reviewId" value="<%= reviewId %>">
 
-                    <h3>
-                        <%= escapeHtml(review.getTitle()) %>
-                    </h3>
+                                <label for="review-rating-<%= reviewId %>">Rating</label>
+                                <select id="review-rating-<%= reviewId %>" name="rating" required>
+                                    <% for (int stars = 5; stars >= 1; stars--) {
+                                        String ratingLabel;
+                                        switch (stars) {
+                                            case 5: ratingLabel = "Excellent"; break;
+                                            case 4: ratingLabel = "Good"; break;
+                                            case 3: ratingLabel = "Average"; break;
+                                            case 2: ratingLabel = "Poor"; break;
+                                            default: ratingLabel = "Terrible";
+                                        }
+                                    %>
+                                        <option value="<%= stars %>" <%= stars == review.getRating() ? "selected" : "" %>><%= stars %> - <%= ratingLabel %></option>
+                                    <% } %>
+                                </select>
 
-                    <p>
-                        <strong>Rating:</strong>
-                        <%= review.getRating() %> / 5
-                    </p>
+                                <label for="review-title-<%= reviewId %>">Review Title</label>
+                                <input id="review-title-<%= reviewId %>" type="text" name="title"
+                                       maxlength="150" value="<%= escapeHtml(review.getTitle()) %>" required>
 
-                    <p>
-                        <%= escapeHtml(review.getDescription()) %>
-                    </p>
+                                <label for="review-description-<%= reviewId %>">Review Description</label>
+                                <textarea id="review-description-<%= reviewId %>" name="description"
+                                          rows="5" required><%= escapeHtml(review.getDescription()) %></textarea>
 
-                </div>
+                                <div class="review-actions">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-outline"
+                                            onclick="toggleReviewEdit(<%= reviewId %>, false)">Cancel</button>
+                                    <button type="submit" form="delete-review-<%= reviewId %>"
+                                            class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
 
+                        <form id="delete-review-<%= reviewId %>" class="delete-form"
+                              method="post" action="${pageContext.request.contextPath}/review"
+                              onsubmit="return confirm('Delete this review permanently?');">
+                            <input type="hidden" name="csrfToken" value="<%= csrf %>">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="listingId" value="<%= listing.getListingId() %>">
+                            <input type="hidden" name="reviewId" value="<%= reviewId %>">
+                        </form>
+                    <% } %>
+                </article>
             <% } %>
-
         <% } else { %>
-
             <p>There are no reviews for this service yet.</p>
-
         <% } %>
 
     </section>
@@ -292,39 +358,6 @@
                 You can review this service after your request
                 has been marked completed.
             </p>
-
-            <% String reviewError =
-                    request.getParameter("reviewError"); %>
-
-            <% if ("invalid".equals(reviewError)) { %>
-
-                <p class="message error" role="alert">
-                    Please provide valid review information.
-                </p>
-
-            <% } else if ("ineligible".equals(reviewError)) { %>
-
-                <p class="message error" role="alert">
-                    You can only review your own completed
-                    service requests for this listing.
-                </p>
-
-            <% } else if ("duplicate".equals(reviewError)) { %>
-
-                <p class="message error" role="alert">
-                    You have already reviewed this request.
-                </p>
-
-            <% } %>
-
-            <% if ("1".equals(
-                    request.getParameter("reviewSuccess"))) { %>
-
-                <p class="message success" role="status">
-                    Your review was submitted successfully.
-                </p>
-
-            <% } %>
 
             <form method="post"
                   action="${pageContext.request.contextPath}/review">
@@ -348,21 +381,6 @@
                        value="<%= escapeHtml(requestedReviewId) %>"
                        required>
 
-                <label for="title">Review Title</label>
-
-                <input type="text"
-                       id="title"
-                       name="title"
-                       maxlength="150"
-                       required>
-
-                <label for="description">Review Description</label>
-
-                <textarea id="description"
-                          name="description"
-                          rows="5"
-                          required></textarea>
-
                 <label for="rating">Rating</label>
 
                 <select id="rating" name="rating" required>
@@ -373,6 +391,14 @@
                     <option value="2">2 - Poor</option>
                     <option value="1">1 - Terrible</option>
                 </select>
+
+                <label for="title">Review Title</label>
+
+                <input type="text" id="title" name="title" maxlength="150" required>
+
+                <label for="description">Review Description</label>
+
+                <textarea id="description" name="description" rows="5" required></textarea>
 
                 <button type="submit" class="btn btn-primary">
                     Submit Review
@@ -390,5 +416,20 @@
     <p>© 2026 Local Services Marketplace</p>
 </footer>
 
+<script>
+    function toggleReviewEdit(reviewId, editing) {
+        const display = document.getElementById('review-view-' + reviewId);
+        const editor = document.getElementById('review-editor-' + reviewId);
+        if (!display || !editor) return;
+        display.hidden = editing;
+        editor.hidden = !editing;
+        if (editing) {
+            editor.querySelector('select').focus();
+        } else {
+            editor.querySelector('form').reset();
+            display.querySelector('button').focus();
+        }
+    }
+</script>
 </body>
 </html>

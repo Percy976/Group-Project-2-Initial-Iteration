@@ -215,6 +215,24 @@
 
         <section class="edit-profile">
 
+            <h2>My Reviews</h2>
+
+            <p>
+                View, edit, or delete reviews you've written
+                for services in the marketplace.
+            </p>
+
+            <div class="profile-actions">
+                <a href="${pageContext.request.contextPath}/account/reviews"
+                   class="btn btn-primary">
+                    Manage My Reviews
+                </a>
+            </div>
+
+        </section>
+
+        <section class="edit-profile">
+
             <h2>Service Requests</h2>
 
             <p>
