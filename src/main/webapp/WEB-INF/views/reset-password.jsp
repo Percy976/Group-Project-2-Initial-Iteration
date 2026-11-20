@@ -41,9 +41,12 @@
         </a>
 
         <nav>
-            <a href="${pageContext.request.contextPath}/login"
-               class="btn btn-outline">
+            <a href="${pageContext.request.contextPath}/login">
                 Log In
+            </a>
+            <a href="${pageContext.request.contextPath}/register"
+               class="btn btn-outline">
+                Sign Up
             </a>
         </nav>
 
@@ -132,12 +135,6 @@
             </form>
 
         <% } %>
-
-        <p class="auth-footer">
-            <a href="${pageContext.request.contextPath}/login">
-                Back to Log In
-            </a>
-        </p>
 
     </section>
 

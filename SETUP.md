@@ -6,6 +6,7 @@
 - Apache Maven
 - Apache Tomcat 9
 - MySQL 8
+- Mailpit (for password recovery testing)
 
 ## Database setup
 
@@ -37,6 +38,39 @@ local MySQL password. Do not put your password in source code.
 
 If your database host, port, or username differs, adjust the URL
 or USER setting in DatabaseConnection.java for your environment.
+
+## Mailpit (password recovery)
+
+The application uses Mailpit to capture password reset emails locally.
+Mailpit does not deliver messages to external email addresses.
+No email account or SMTP credentials are required for local testing.
+
+Install Mailpit on the computer running Tomcat:
+
+Windows:
+
+1. Download the Windows archive from:
+   https://github.com/axllent/mailpit/releases
+2. Extract the archive to a folder on your computer.
+3. Run mailpit.exe from the extracted folder.
+4. Keep Mailpit running while testing password recovery.
+
+Linux:
+
+1. Install Mailpit using the instructions at:
+   https://mailpit.axllent.org/docs/install/
+2. Start Mailpit using:
+
+```shell
+mailpit
+```
+
+3. Keep Mailpit running while testing password recovery.
+
+Mailpit uses the following local ports by default:
+
+- SMTP: localhost:1025
+- Web inbox: http://localhost:8025
 
 ## Running through Eclipse
 

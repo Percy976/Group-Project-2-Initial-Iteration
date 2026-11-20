@@ -2,6 +2,8 @@
 package com.marketplace.servlet;
 
 import com.marketplace.service.PasswordResetService;
+import com.marketplace.service.EmailService;
+import jakarta.mail.MessagingException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +23,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
     private final PasswordResetService resetService =
             new PasswordResetService();
+    private final EmailService emailService = new EmailService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -75,9 +78,16 @@ public class ForgotPasswordServlet extends HttpServlet {
         }
 
         try {
-            // Generate and store a reset token if the account exists.
-            // Email delivery will be connected in a later step.
-            resetService.requestReset(email.trim());
+            // Only known accounts generate tokens; the response is identical either way.
+            java.util.Optional<String> token = resetService.requestReset(email.trim());
+            if (token.isPresent()) {
+                try {
+                    emailService.sendPasswordReset(email.trim(), token.get());
+                } catch (MessagingException | IllegalStateException e) {
+                    // Do not reveal account existence or reset tokens in the response/logs.
+                    getServletContext().log("Password reset email delivery failed", e);
+                }
+            }
 
             // Do not reveal whether the email is registered.
             request.setAttribute("submitted", true);

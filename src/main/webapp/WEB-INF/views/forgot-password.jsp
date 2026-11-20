@@ -41,8 +41,9 @@
         </a>
 
         <nav>
-            <a href="${pageContext.request.contextPath}/login">
-                Log In
+            <a href="${pageContext.request.contextPath}/register"
+               class="btn btn-outline">
+                Sign Up
             </a>
         </nav>
 
