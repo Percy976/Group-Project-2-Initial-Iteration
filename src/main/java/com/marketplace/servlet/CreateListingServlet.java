@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Handles display and submission of the create-listing form.
+ */
 @WebServlet("/listings/create")
 public class CreateListingServlet extends HttpServlet {
 
@@ -22,6 +25,13 @@ public class CreateListingServlet extends HttpServlet {
     private final ListingCreationService listingService =
             new ListingCreationService();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -40,6 +50,13 @@ public class CreateListingServlet extends HttpServlet {
         showForm(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -101,6 +118,11 @@ public class CreateListingServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Returns the logged in user.
+     * @param request the HTTP request
+     * @return the current logged in user
+     */
     private User getLoggedInUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
@@ -112,6 +134,10 @@ public class CreateListingServlet extends HttpServlet {
         return value instanceof User ? (User) value : null;
     }
 
+    /**
+     * Ensures a CSRF token exists in the user session.
+     * @param session the session
+     */
     private void ensureCsrfToken(HttpSession session) {
         if (!(session.getAttribute("csrfToken") instanceof String)) {
             session.setAttribute(
@@ -119,6 +145,13 @@ public class CreateListingServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Renders the form with the current state and feedback.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showForm(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {

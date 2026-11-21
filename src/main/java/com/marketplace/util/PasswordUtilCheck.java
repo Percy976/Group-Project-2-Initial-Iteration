@@ -6,6 +6,10 @@ package com.marketplace.util;
  */
 public class PasswordUtilCheck {
 
+    /**
+     * Runs the standalone password utility verification checks.
+     * @param args the args
+     */
     public static void main(String[] args) {
         String password = "ExamplePassword123!";
 
@@ -33,6 +37,11 @@ public class PasswordUtilCheck {
         System.out.println("All password checks passed.");
     }
 
+    /**
+     * Reports the result of a password utility check.
+     * @param description the description
+     * @param passed the passed
+     */
     private static void check(String description, boolean passed) {
         if (!passed) {
             throw new AssertionError("FAIL: " + description);

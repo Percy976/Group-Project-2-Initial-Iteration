@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests pricing strategies and their selection.
+ */
 class ListingPriceValidatorTest {
 
     private final ListingPriceValidator validator =

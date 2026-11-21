@@ -11,6 +11,9 @@ public final class ListingPriceValidator {
 
     private final Map<String, PricingStrategy> strategies;
 
+    /**
+     * Creates a new ListingPriceValidator instance.
+     */
     public ListingPriceValidator() {
         PricingStrategy required = new RequiredPriceStrategy();
 
@@ -20,6 +23,12 @@ public final class ListingPriceValidator {
                 "NEGOTIABLE", new NegotiablePriceStrategy());
     }
 
+    /**
+     * Validates and normalizes the submitted listing price.
+     * @param priceType the price type
+     * @param rawPrice the raw price
+     * @return the result of the operation
+     */
     public BigDecimal validate(String priceType, String rawPrice) {
         String cleanedType = priceType == null ? "" : priceType.trim();
 

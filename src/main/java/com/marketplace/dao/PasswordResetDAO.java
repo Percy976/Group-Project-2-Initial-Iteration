@@ -11,8 +11,18 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Persists password reset tokens and applies password changes.
+ */
 public class PasswordResetDAO {
 
+    /**
+     * Persists a hashed password reset token with its expiry.
+     * @param userId the user id
+     * @param tokenHash the token hash
+     * @param expiresAt the expires at
+     * @throws SQLException if the database operation fails
+     */
     public void saveToken(int userId, String tokenHash,
                           LocalDateTime expiresAt)
             throws SQLException {
@@ -34,6 +44,12 @@ public class PasswordResetDAO {
         }
     }
 
+    /**
+     * Finds the account associated with an unexpired reset token.
+     * @param tokenHash the token hash
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     public Optional<Integer> findValidUserId(String tokenHash)
             throws SQLException {
 
@@ -60,6 +76,11 @@ public class PasswordResetDAO {
         return Optional.empty();
     }
 
+    /**
+     * Invalidates outstanding password reset tokens for a user.
+     * @param userId the user id
+     * @throws SQLException if the database operation fails
+     */
     public void deleteTokensForUser(int userId) throws SQLException {
 
         String sql = """
@@ -76,6 +97,13 @@ public class PasswordResetDAO {
     }
 
 
+    /**
+     * Replaces the password hash using a valid reset token.
+     * @param tokenHash the token hash
+     * @param newPasswordHash the new password hash
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean resetPassword(String tokenHash, String newPasswordHash)
             throws SQLException {
 

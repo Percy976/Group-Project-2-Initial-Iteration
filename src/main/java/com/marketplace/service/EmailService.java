@@ -14,8 +14,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /** Sends password-reset messages through local Mailpit by default. */
+/**
+ * Sends marketplace notification and password recovery emails using SMTP.
+ */
 public class EmailService {
 
+    /**
+     * Emails a password reset link to the specified recipient.
+     * @param recipientEmail the recipient email
+     * @param token the token
+     * @throws MessagingException if the operation fails
+     */
     public void sendPasswordReset(String recipientEmail, String token)
             throws MessagingException {
         String baseUrl = envOrDefault(
@@ -35,6 +44,12 @@ public class EmailService {
     }
 
     /** Sends a welcome message after successful account registration. */
+    /**
+     * Emails confirmation of a successful account registration.
+     * @param recipientEmail the recipient email
+     * @param firstName the first name
+     * @throws MessagingException if the operation fails
+     */
     public void sendRegistrationConfirmation(String recipientEmail, String firstName)
             throws MessagingException {
         String greeting = firstName == null || firstName.isBlank()
@@ -48,6 +63,13 @@ public class EmailService {
                         + "Local Services Marketplace");
     }
 
+    /**
+     * Delivers a plain-text message through the configured SMTP server.
+     * @param recipientEmail the recipient email
+     * @param subject the subject
+     * @param body the body
+     * @throws MessagingException if the operation fails
+     */
     private void sendTextEmail(String recipientEmail, String subject, String body)
             throws MessagingException {
         // Zero-configuration development defaults: Mailpit's local SMTP port.
@@ -96,6 +118,12 @@ public class EmailService {
         Transport.send(message);
     }
 
+    /**
+     * Reads an environment variable or returns a fallback setting.
+     * @param name the name
+     * @param fallback the fallback
+     * @return the result of the operation
+     */
     private static String envOrDefault(String name, String fallback) {
         String value = System.getenv(name);
         return value == null || value.isBlank() ? fallback : value.trim();

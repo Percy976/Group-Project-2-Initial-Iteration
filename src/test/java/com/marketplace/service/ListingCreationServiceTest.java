@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests listing creation rules and DAO delegation.
+ */
 class ListingCreationServiceTest {
 
     @Test
@@ -130,6 +133,9 @@ class ListingCreationServiceTest {
         assertSame(failure, actual);
     }
 
+    /**
+     * Provides a test double for observing listing DAO calls.
+     */
     private static class RecordingDao extends JdbcListingDAO {
         int calls;
         int providerId;
@@ -139,6 +145,16 @@ class ListingCreationServiceTest {
         BigDecimal price;
         String priceType;
 
+        /**
+         * Persists a new record after applying the relevant ownership and validation constraints.
+         * @param providerId the provider id
+         * @param title the title
+         * @param description the description
+         * @param category the category
+         * @param price the price
+         * @param priceType the price type
+         * @return the identifier of the created record
+         */
         @Override
         public int create(int providerId, String title,
                           String description, String category,

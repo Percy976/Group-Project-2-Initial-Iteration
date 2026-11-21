@@ -7,8 +7,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provides JDBC access to service requests and their status transitions.
+ */
 public class JdbcServiceRequestDAO {
 
+    /**
+     * Holds service request details for presentation.
+     */
     public static class RequestRow {
         private int requestId;
         private int listingId;
@@ -25,22 +31,86 @@ public class JdbcServiceRequestDAO {
         private Timestamp requestedAt;
         private boolean reviewed;
 
+        /**
+         * Returns the request id.
+         * @return the current request id
+         */
         public int getRequestId() { return requestId; }
+        /**
+         * Returns the listing id.
+         * @return the current listing id
+         */
         public int getListingId() { return listingId; }
+        /**
+         * Returns the customer id.
+         * @return the current customer id
+         */
         public int getCustomerId() { return customerId; }
+        /**
+         * Returns the provider id.
+         * @return the current provider id
+         */
         public int getProviderId() { return providerId; }
+        /**
+         * Returns the listing title.
+         * @return the current listing title
+         */
         public String getListingTitle() { return listingTitle; }
+        /**
+         * Returns the customer name.
+         * @return the current customer name
+         */
         public String getCustomerName() { return customerName; }
+        /**
+         * Returns the customer email.
+         * @return the current customer email
+         */
         public String getCustomerEmail() { return customerEmail; }
+        /**
+         * Returns the customer phone.
+         * @return the current customer phone
+         */
         public String getCustomerPhone() { return customerPhone; }
+        /**
+         * Returns the provider name.
+         * @return the current provider name
+         */
         public String getProviderName() { return providerName; }
+        /**
+         * Returns the message.
+         * @return the current message
+         */
         public String getMessage() { return message; }
+        /**
+         * Returns the provider response.
+         * @return the current provider response
+         */
         public String getProviderResponse() { return providerResponse; }
+        /**
+         * Returns the status.
+         * @return the current status
+         */
         public String getStatus() { return status; }
+        /**
+         * Returns the requested at.
+         * @return the current requested at
+         */
         public Timestamp getRequestedAt() { return requestedAt; }
+        /**
+         * Indicates whether reviewed is true.
+         * @return whether the property is enabled
+         */
         public boolean isReviewed() { return reviewed; }
     }
 
+    /**
+     * Persists a new record after applying the relevant ownership and validation constraints.
+     * @param listingId the listing id
+     * @param customerId the customer id
+     * @param message the message
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean create(int listingId, int customerId,
                           String message) throws SQLException {
 
@@ -66,6 +136,12 @@ public class JdbcServiceRequestDAO {
         }
     }
 
+    /**
+     * Retrieves requests submitted by a particular customer.
+     * @param customerId the customer id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<RequestRow> findByCustomer(int customerId)
             throws SQLException {
 
@@ -75,6 +151,12 @@ public class JdbcServiceRequestDAO {
             """, customerId, false);
     }
 
+    /**
+     * Retrieves requests for listings owned by a particular provider.
+     * @param providerId the provider id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<RequestRow> findByProvider(int providerId)
             throws SQLException {
 
@@ -84,6 +166,14 @@ public class JdbcServiceRequestDAO {
             """, providerId, true);
     }
 
+    /**
+     * Executes the request lookup query with the selected visibility rules.
+     * @param condition the condition
+     * @param userId the user id
+     * @param includeCustomerContact the include customer contact
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     private List<RequestRow> findRequests(
             String condition, int userId,
             boolean includeCustomerContact) throws SQLException {
@@ -149,6 +239,15 @@ public class JdbcServiceRequestDAO {
         return requests;
     }
 
+    /**
+     * Changes a request status subject to the appropriate user and status checks.
+     * @param requestId the request id
+     * @param userId the user id
+     * @param action the action
+     * @param response the response
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean updateStatus(int requestId, int userId,
                                 String action, String response)
             throws SQLException {

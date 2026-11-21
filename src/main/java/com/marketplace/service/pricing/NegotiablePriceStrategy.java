@@ -11,6 +11,11 @@ public final class NegotiablePriceStrategy implements PricingStrategy {
     private final PricingStrategy requiredPriceStrategy =
             new RequiredPriceStrategy();
 
+    /**
+     * Validates and normalizes the submitted listing price.
+     * @param rawPrice the raw price
+     * @return the result of the operation
+     */
     @Override
     public BigDecimal validate(String rawPrice) {
         if (rawPrice == null || rawPrice.trim().isEmpty()) {

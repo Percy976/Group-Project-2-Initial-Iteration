@@ -16,6 +16,9 @@ public final class ListingCreationService {
     private final JdbcListingDAO listingDAO;
     private final ListingPriceValidator priceValidator;
 
+    /**
+     * Creates a new ListingCreationService instance.
+     */
     public ListingCreationService() {
         this(new JdbcListingDAO());
     }
@@ -28,6 +31,17 @@ public final class ListingCreationService {
         this.priceValidator = new ListingPriceValidator();
     }
 
+    /**
+     * Persists a new record after applying the relevant ownership and validation constraints.
+     * @param providerId the provider id
+     * @param title the title
+     * @param description the description
+     * @param category the category
+     * @param rawPrice the raw price
+     * @param priceType the price type
+     * @return the identifier of the created record
+     * @throws SQLException if the database operation fails
+     */
     public int create(int providerId, String title,
                       String description, String category,
                       String rawPrice, String priceType)
@@ -57,10 +71,22 @@ public final class ListingCreationService {
                 cleanedPriceType);
     }
 
+    /**
+     * Normalizes optional text input.
+     * @param value the value
+     * @return the result of the operation
+     */
     private static String text(String value) {
         return value == null ? "" : value.trim();
     }
 
+    /**
+     * Validates required text and its maximum length.
+     * @param value the value
+     * @param label the label
+     * @param maximumLength the maximum length
+     * @return the result of the operation
+     */
     private static String requiredText(
             String value, String label, int maximumLength) {
 

@@ -4,6 +4,9 @@ package com.marketplace.util;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Creates JDBC connections using the marketplace database settings.
+ */
 public class DatabaseConnection {
 
     private static final String URL =
@@ -13,6 +16,11 @@ public class DatabaseConnection {
 
     private static final String PASSWORD = System.getenv("MARKETPLACE_DB_PASSWORD");
 
+    /**
+     * Returns the connection.
+     * @return the current connection
+     * @throws SQLException if the database operation fails
+     */
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

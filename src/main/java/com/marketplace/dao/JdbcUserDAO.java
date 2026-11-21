@@ -20,6 +20,13 @@ public class JdbcUserDAO implements UserDAO {
             "user_id, username, email, first_name, last_name, "
             + "phone, bio, is_admin, created_at";
 
+    /**
+     * Persists a new record after applying the relevant ownership and validation constraints.
+     * @param user the user
+     * @param passwordHash the password hash
+     * @return the identifier of the created record
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public int create(User user, String passwordHash)
             throws SQLException {
@@ -57,6 +64,12 @@ public class JdbcUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Looks up a single record by its identifier.
+     * @param userId the user id
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public Optional<User> findById(int userId) throws SQLException {
         String sql = "SELECT " + USER_COLUMNS
@@ -76,6 +89,12 @@ public class JdbcUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Finds a user account by username.
+     * @param username the username
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public Optional<User> findByUsername(String username)
             throws SQLException {
@@ -86,6 +105,12 @@ public class JdbcUserDAO implements UserDAO {
         return findByText(sql, username);
     }
 
+    /**
+     * Finds a user account by email address.
+     * @param email the email
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public Optional<User> findByEmail(String email)
             throws SQLException {
@@ -96,6 +121,12 @@ public class JdbcUserDAO implements UserDAO {
         return findByText(sql, email);
     }
 
+    /**
+     * Retrieves the stored password hash used to authenticate a user.
+     * @param username the username
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public Optional<String> findPasswordHashByUsername(String username)
             throws SQLException {
@@ -121,6 +152,12 @@ public class JdbcUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Saves permitted account profile changes.
+     * @param user the user
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     @Override
     public boolean updateProfile(User user) throws SQLException {
         String sql = """
@@ -145,6 +182,13 @@ public class JdbcUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Executes a parameterized query for a user using a text key.
+     * @param sql the sql
+     * @param value the value
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     private Optional<User> findByText(String sql, String value)
             throws SQLException {
 
@@ -162,6 +206,12 @@ public class JdbcUserDAO implements UserDAO {
         }
     }
 
+    /**
+     * Maps the current result-set row into a User model.
+     * @param result the result
+     * @return the result of the operation
+     * @throws SQLException if the database operation fails
+     */
     private User mapUser(ResultSet result) throws SQLException {
         User user = new User();
 

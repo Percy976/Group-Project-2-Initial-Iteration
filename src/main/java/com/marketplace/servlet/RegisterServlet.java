@@ -27,6 +27,13 @@ public class RegisterServlet extends HttpServlet {
     private final AuthService authService = new AuthService();
     private final EmailService emailService = new EmailService();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -43,6 +50,13 @@ public class RegisterServlet extends HttpServlet {
         showForm(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -117,6 +131,13 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Renders the form with the current state and feedback.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showForm(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {

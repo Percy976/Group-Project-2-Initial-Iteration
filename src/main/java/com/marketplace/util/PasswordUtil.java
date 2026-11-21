@@ -26,6 +26,9 @@ public final class PasswordUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /**
+     * Creates a new PasswordUtil instance.
+     */
     private PasswordUtil() {
         // Utility class: instances are not needed.
     }
@@ -91,6 +94,13 @@ public final class PasswordUtil {
         }
     }
 
+    /**
+     * Derives password key material using the configured hashing algorithm.
+     * @param password the password
+     * @param salt the salt
+     * @param iterations the iterations
+     * @return the result of the operation
+     */
     private static byte[] deriveKey(String password,
                                     byte[] salt,
                                     int iterations) {

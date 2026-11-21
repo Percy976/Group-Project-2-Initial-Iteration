@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * Displays public information for a listing provider.
+ */
 @WebServlet("/provider")
 public class ProviderProfileServlet extends HttpServlet {
 
@@ -22,6 +25,13 @@ public class ProviderProfileServlet extends HttpServlet {
     private final PublicProviderDAO providerDAO =
             new PublicProviderDAO();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)

@@ -16,12 +16,22 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
+/**
+ * Handles creating, updating, and deleting customer reviews.
+ */
 @WebServlet("/review")
 public class ReviewServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -79,6 +89,15 @@ public class ReviewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Creates a review for an eligible completed service request.
+     * @param request the HTTP request
+     * @param response the response
+     * @param listingId the listing id
+     * @param user the user
+     * @throws SQLException if the database operation fails
+     * @throws IOException if an I/O operation fails
+     */
     private void createReview(HttpServletRequest request,
                               HttpServletResponse response,
                               int listingId, User user)
@@ -93,6 +112,15 @@ public class ReviewServlet extends HttpServlet {
         redirectWithSuccess(request, response, listingId, "created");
     }
 
+    /**
+     * Updates a review only if it belongs to the signed-in user.
+     * @param request the HTTP request
+     * @param response the response
+     * @param listingId the listing id
+     * @param user the user
+     * @throws SQLException if the database operation fails
+     * @throws IOException if an I/O operation fails
+     */
     private void updateReview(HttpServletRequest request,
                               HttpServletResponse response,
                               int listingId, User user)
@@ -108,6 +136,15 @@ public class ReviewServlet extends HttpServlet {
         redirectWithSuccess(request, response, listingId, "updated");
     }
 
+    /**
+     * Deletes a review only if it belongs to the signed-in user.
+     * @param request the HTTP request
+     * @param response the response
+     * @param listingId the listing id
+     * @param user the user
+     * @throws SQLException if the database operation fails
+     * @throws IOException if an I/O operation fails
+     */
     private void deleteReview(HttpServletRequest request,
                               HttpServletResponse response,
                               int listingId, User user)
@@ -120,12 +157,22 @@ public class ReviewServlet extends HttpServlet {
         redirectWithSuccess(request, response, listingId, "deleted");
     }
 
+    /**
+     * Parses a positive numeric identifier from an HTTP parameter.
+     * @param value the value
+     * @return the parsed identifier
+     */
     private static int positiveInt(String value) {
         int parsed = Integer.parseInt(value);
         if (parsed <= 0) throw new NumberFormatException("Expected positive ID");
         return parsed;
     }
 
+    /**
+     * Validates review title, description, and star rating.
+     * @param request the HTTP request
+     * @return the validated review fields
+     */
     private static ReviewFields validatedFields(HttpServletRequest request) {
         int rating = Integer.parseInt(request.getParameter("rating"));
         String title = request.getParameter("title");
@@ -143,8 +190,19 @@ public class ReviewServlet extends HttpServlet {
         return new ReviewFields(title, description, rating);
     }
 
+    /**
+     * Contains review form fields validated before persistence.
+     */
     private record ReviewFields(String title, String description, int rating) { }
 
+    /**
+     * Redirects the customer with a review error indicator.
+     * @param request the HTTP request
+     * @param response the response
+     * @param listingId the listing id
+     * @param errorCode the error code
+     * @throws IOException if an I/O operation fails
+     */
     private void redirectWithError(HttpServletRequest request,
                                    HttpServletResponse response,
                                    int listingId, String errorCode) throws IOException {
@@ -159,6 +217,14 @@ public class ReviewServlet extends HttpServlet {
                 + "#reviews");
     }
 
+    /**
+     * Redirects the customer with a review success indicator.
+     * @param request the HTTP request
+     * @param response the response
+     * @param listingId the listing id
+     * @param result the result
+     * @throws IOException if an I/O operation fails
+     */
     private void redirectWithSuccess(HttpServletRequest request,
                                      HttpServletResponse response,
                                      int listingId, String result) throws IOException {

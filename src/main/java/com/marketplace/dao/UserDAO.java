@@ -19,10 +19,28 @@ public interface UserDAO {
      */
     int create(User user, String passwordHash) throws SQLException;
 
+    /**
+     * Looks up a single record by its identifier.
+     * @param userId the user id
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     Optional<User> findById(int userId) throws SQLException;
 
+    /**
+     * Finds a user account by username.
+     * @param username the username
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     Optional<User> findByUsername(String username) throws SQLException;
 
+    /**
+     * Finds a user account by email address.
+     * @param email the email
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     Optional<User> findByEmail(String email) throws SQLException;
 
     /**

@@ -14,6 +14,9 @@ import java.sql.SQLException;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Displays and processes changes to listings owned by the user.
+ */
 @WebServlet("/account/listings")
 public class ManageListingsServlet extends HttpServlet {
 
@@ -24,6 +27,11 @@ public class ManageListingsServlet extends HttpServlet {
     private static final Set<String> PRICE_TYPES =
             Set.of("FIXED", "HOURLY", "NEGOTIABLE");
 
+    /**
+     * Returns the user.
+     * @param request the HTTP request
+     * @return the current user
+     */
     private User getUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
@@ -33,6 +41,13 @@ public class ManageListingsServlet extends HttpServlet {
         return user instanceof User ? (User) user : null;
     }
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -86,6 +101,13 @@ public class ManageListingsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -225,6 +247,11 @@ public class ManageListingsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Parses a numeric identifier from an HTTP parameter.
+     * @param value the value
+     * @return the parsed identifier
+     */
     private int parseId(String value) {
         try {
             int id = Integer.parseInt(value);
@@ -235,6 +262,12 @@ public class ManageListingsServlet extends HttpServlet {
         throw new IllegalArgumentException("Invalid ID");
     }
 
+    /**
+     * Validates required text and its maximum length.
+     * @param value the value
+     * @param maxLength the max length
+     * @return the result of the operation
+     */
     private String required(String value, int maxLength) {
         if (value == null || value.isBlank()
                 || value.trim().length() > maxLength) {
@@ -245,6 +278,13 @@ public class ManageListingsServlet extends HttpServlet {
         return value.trim();
     }
 
+    /**
+     * Redirects the browser to the appropriate application route.
+     * @param request the HTTP request
+     * @param response the response
+     * @param result the result
+     * @throws IOException if an I/O operation fails
+     */
     private void redirect(HttpServletRequest request,
                           HttpServletResponse response,
                           String result) throws IOException {
@@ -254,6 +294,13 @@ public class ManageListingsServlet extends HttpServlet {
                         + "/account/listings?result=" + result);
     }
 
+    /**
+     * Renders the JSP page with the prepared request attributes.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showPage(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {

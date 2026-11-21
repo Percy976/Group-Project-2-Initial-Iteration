@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * Handles requests for password reset links.
+ */
 @WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {
 
@@ -25,6 +28,13 @@ public class ForgotPasswordServlet extends HttpServlet {
             new PasswordResetService();
     private final EmailService emailService = new EmailService();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -42,6 +52,13 @@ public class ForgotPasswordServlet extends HttpServlet {
         showForm(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -110,6 +127,13 @@ public class ForgotPasswordServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Renders the form with the current state and feedback.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showForm(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {

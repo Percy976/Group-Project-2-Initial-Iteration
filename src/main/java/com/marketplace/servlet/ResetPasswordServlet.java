@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * Validates reset links and accepts replacement passwords.
+ */
 @WebServlet("/reset-password")
 public class ResetPasswordServlet extends HttpServlet {
 
@@ -22,6 +25,13 @@ public class ResetPasswordServlet extends HttpServlet {
     private final PasswordResetService resetService =
             new PasswordResetService();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -56,6 +66,13 @@ public class ResetPasswordServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -130,6 +147,15 @@ public class ResetPasswordServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Displays an error for a password-reset request.
+     * @param request the HTTP request
+     * @param response the response
+     * @param token the token
+     * @param message the message
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showError(HttpServletRequest request,
                            HttpServletResponse response,
                            String token,
@@ -141,6 +167,13 @@ public class ResetPasswordServlet extends HttpServlet {
         showPage(request, response);
     }
 
+    /**
+     * Renders the JSP page with the prepared request attributes.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     private void showPage(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
@@ -150,6 +183,10 @@ public class ResetPasswordServlet extends HttpServlet {
         ).forward(request, response);
     }
 
+    /**
+     * Sets the security headers.
+     * @param response the response
+     */
     private void setSecurityHeaders(HttpServletResponse response) {
         response.setHeader("Cache-Control", "no-store");
         response.setHeader("Referrer-Policy", "no-referrer");

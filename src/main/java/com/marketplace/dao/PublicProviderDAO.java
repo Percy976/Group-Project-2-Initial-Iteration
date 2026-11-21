@@ -13,8 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Retrieves public provider information and active listings.
+ */
 public class PublicProviderDAO {
 
+    /**
+     * Finds public profile information for a provider.
+     * @param providerId the provider id
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     public Optional<User> findProvider(int providerId)
             throws SQLException {
 
@@ -48,6 +57,12 @@ public class PublicProviderDAO {
         }
     }
 
+    /**
+     * Retrieves active listings owned by a provider.
+     * @param providerId the provider id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<ServiceListing> findActiveListings(int providerId)
             throws SQLException {
 

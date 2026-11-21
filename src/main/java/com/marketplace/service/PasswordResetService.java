@@ -15,6 +15,9 @@ import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Optional;
 
+/**
+ * Manages creation, validation, and redemption of password reset tokens.
+ */
 public class PasswordResetService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -25,6 +28,12 @@ public class PasswordResetService {
     private final PasswordResetDAO resetDAO = new PasswordResetDAO();
 
     // Generate a reset token for an existing email address.
+    /**
+     * Creates a short-lived reset token for a registered email address.
+     * @param email the email
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     public Optional<String> requestReset(String email)
             throws SQLException {
 
@@ -61,6 +70,12 @@ public class PasswordResetService {
     }
 
     // Check whether a reset token is valid and unexpired.
+    /**
+     * Checks a reset token and finds its associated user.
+     * @param token the token
+     * @return an optional result when a matching value exists
+     * @throws SQLException if the database operation fails
+     */
     public Optional<Integer> validateToken(String token)
             throws SQLException {
 
@@ -72,6 +87,11 @@ public class PasswordResetService {
     }
 
     // Convert the token to a SHA-256 hash for database storage.
+    /**
+     * Hashes a reset token before database lookup or storage.
+     * @param token the token
+     * @return the result of the operation
+     */
     private String hashToken(String token) {
 
         try {
@@ -93,6 +113,13 @@ public class PasswordResetService {
     }
 
 
+    /**
+     * Replaces the password hash using a valid reset token.
+     * @param token the token
+     * @param newPassword the new password
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean resetPassword(String token, String newPassword)
             throws SQLException {
 

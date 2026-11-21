@@ -17,10 +17,17 @@ public class AuthService {
 
     private final UserDAO userDAO;
 
+    /**
+     * Creates a new AuthService instance.
+     */
     public AuthService() {
         this(new JdbcUserDAO());
     }
 
+    /**
+     * Creates a new AuthService instance.
+     * @param userDAO the user dao
+     */
     public AuthService(UserDAO userDAO) {
         this.userDAO = Objects.requireNonNull(userDAO);
     }
@@ -138,6 +145,13 @@ public class AuthService {
         return userDAO.findByUsername(cleanedUsername);
     }
 
+    /**
+     * Validates required text and its maximum length.
+     * @param value the value
+     * @param label the label
+     * @param maxLength the max length
+     * @return the result of the operation
+     */
     private String required(String value, String label, int maxLength) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(label + " is required.");

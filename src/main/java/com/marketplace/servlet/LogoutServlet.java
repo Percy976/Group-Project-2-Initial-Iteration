@@ -16,6 +16,12 @@ public class LogoutServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)

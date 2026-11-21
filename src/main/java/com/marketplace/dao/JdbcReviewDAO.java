@@ -10,8 +10,17 @@ import java.util.List;
 import com.marketplace.model.ServiceReview;
 import com.marketplace.util.DatabaseConnection;
 
+/**
+ * Provides JDBC operations for reviews, eligibility checks, and rating summaries.
+ */
 public class JdbcReviewDAO {
 
+    /**
+     * Persists a new record after applying the relevant ownership and validation constraints.
+     * @param review the review
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean create(ServiceReview review) throws SQLException {
 
         String sql = """
@@ -49,6 +58,13 @@ public class JdbcReviewDAO {
         NO_REQUEST, NOT_COMPLETED, ALREADY_REVIEWED, ELIGIBLE
     }
 
+    /**
+     * Returns the review eligibility.
+     * @param listingId the listing id
+     * @param customerId the customer id
+     * @return the current review eligibility
+     * @throws SQLException if the database operation fails
+     */
     public ReviewEligibility getReviewEligibility(int listingId, int customerId)
             throws SQLException {
         String sql = """
@@ -192,8 +208,17 @@ public class JdbcReviewDAO {
         return reviews;
     }
 
+    /**
+     * Represents MyReviewRow in the marketplace application.
+     */
     public record MyReviewRow(ServiceReview review, String listingName) {}
 
+    /**
+     * Retrieves reviews associated with the specified listing.
+     * @param listingId the listing id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<ServiceReview> findByListingId(int listingId) throws SQLException {
 
         List<ServiceReview> reviews = new ArrayList<>();
@@ -231,6 +256,12 @@ public class JdbcReviewDAO {
     }
 
 
+    /**
+     * Calculates the average rating for the specified listing.
+     * @param listingId the listing id
+     * @return the result of the operation
+     * @throws SQLException if the database operation fails
+     */
     public Double findAverageRatingByListingId(int listingId) throws SQLException {
 
         String sql = """

@@ -15,8 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Provides JDBC operations for creating and retrieving service listings.
+ */
 public class JdbcListingDAO {
 
+    /**
+     * Retrieves active listings matching the supplied search criteria.
+     * @param limit the limit
+     * @param offset the offset
+     * @param searchQuery the search query
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<ServiceListing> findActive(
             int limit, int offset, String searchQuery)
             throws SQLException {
@@ -99,6 +110,12 @@ public class JdbcListingDAO {
         return listings;
     }
 
+    /**
+     * Looks up a single record by its identifier.
+     * @param listingId the listing id
+     * @return the result of the operation
+     * @throws SQLException if the database operation fails
+     */
     public ServiceListing findById(int listingId) throws SQLException {
 
         String sql = """
@@ -143,6 +160,17 @@ public class JdbcListingDAO {
         return null;
     }
 
+    /**
+     * Persists a new record after applying the relevant ownership and validation constraints.
+     * @param providerId the provider id
+     * @param title the title
+     * @param description the description
+     * @param category the category
+     * @param price the price
+     * @param priceType the price type
+     * @return the identifier of the created record
+     * @throws SQLException if the database operation fails
+     */
     public int create(int providerId, String title,
                       String description, String category,
                       BigDecimal price, String priceType)

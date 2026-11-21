@@ -14,12 +14,22 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /** Displays reviews belonging to the signed-in customer (PR0019). */
+/**
+ * Displays the logged-in user’s reviews.
+ */
 @WebServlet("/account/reviews")
 public class MyReviewsServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

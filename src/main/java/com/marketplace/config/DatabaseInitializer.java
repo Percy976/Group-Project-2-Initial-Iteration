@@ -10,8 +10,14 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.stream.Collectors;
 
+/**
+ * Creates and seeds the database schema required by the marketplace.
+ */
 public class DatabaseInitializer {
 
+    /**
+     * Initializes the database schema and seed data.
+     */
     public static void initialize() {
 
         String url = "jdbc:mysql://localhost:3306/";
@@ -46,6 +52,11 @@ public class DatabaseInitializer {
         }
     }
 
+    /**
+     * Loads and executes SQL statements from a bundled resource.
+     * @param connection the connection
+     * @param resourcePath the resource path
+     */
     private static void executeSqlFile(
             Connection connection, String resourcePath) throws Exception {
 

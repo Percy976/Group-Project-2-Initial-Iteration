@@ -18,6 +18,9 @@ import com.marketplace.model.ServiceListing;
 import com.marketplace.model.User;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Displays listing details and reviews with eligibility information.
+ */
 @WebServlet("/listing")
 public class ListingDetailsServlet extends HttpServlet {
 
@@ -26,6 +29,13 @@ public class ListingDetailsServlet extends HttpServlet {
     private final JdbcListingDAO listingDAO = new JdbcListingDAO();
     private final JdbcReviewDAO reviewDAO = new JdbcReviewDAO();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)

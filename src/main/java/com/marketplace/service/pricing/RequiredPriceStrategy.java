@@ -9,6 +9,11 @@ import java.math.RoundingMode;
  */
 public final class RequiredPriceStrategy implements PricingStrategy {
 
+    /**
+     * Validates and normalizes the submitted listing price.
+     * @param rawPrice the raw price
+     * @return the result of the operation
+     */
     @Override
     public BigDecimal validate(String rawPrice) {
         String cleaned = rawPrice == null ? "" : rawPrice.trim();

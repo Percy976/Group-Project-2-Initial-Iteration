@@ -8,8 +8,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles listing management operations scoped to the listing owner.
+ */
 public class ManageListingDAO {
 
+    /**
+     * Represents Listing in the marketplace application.
+     */
     public static class Listing {
         public int id;
         public String title;
@@ -20,6 +26,12 @@ public class ManageListingDAO {
         public String status;
     }
 
+    /**
+     * Maps the current result-set row into a listing record.
+     * @param rs the rs
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     private Listing read(ResultSet rs) throws SQLException {
         Listing listing = new Listing();
         listing.id = rs.getInt("listing_id");
@@ -32,6 +44,12 @@ public class ManageListingDAO {
         return listing;
     }
 
+    /**
+     * Returns listings belonging to the specified user.
+     * @param userId the user id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public List<Listing> findByOwner(int userId)
             throws SQLException {
 
@@ -60,6 +78,13 @@ public class ManageListingDAO {
         return listings;
     }
 
+    /**
+     * Retrieves a listing only when the specified user owns it.
+     * @param listingId the listing id
+     * @param userId the user id
+     * @return the matching records
+     * @throws SQLException if the database operation fails
+     */
     public Listing findOwned(int listingId, int userId)
             throws SQLException {
 
@@ -82,6 +107,18 @@ public class ManageListingDAO {
         }
     }
 
+    /**
+     * Updates an existing record when the required ownership checks succeed.
+     * @param listingId the listing id
+     * @param userId the user id
+     * @param title the title
+     * @param description the description
+     * @param category the category
+     * @param price the price
+     * @param priceType the price type
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean update(int listingId, int userId,
                           String title, String description,
                           String category, BigDecimal price,
@@ -115,6 +152,14 @@ public class ManageListingDAO {
         }
     }
 
+    /**
+     * Sets the active.
+     * @param listingId the listing id
+     * @param userId the user id
+     * @param active the active
+     * @return true if the operation succeeds; false otherwise
+     * @throws SQLException if the database operation fails
+     */
     public boolean setActive(int listingId, int userId,
                              boolean active) throws SQLException {
 

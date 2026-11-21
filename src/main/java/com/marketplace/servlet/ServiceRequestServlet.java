@@ -13,6 +13,9 @@ import java.sql.SQLException;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Handles customer requests and provider responses.
+ */
 @WebServlet("/requests")
 public class ServiceRequestServlet extends HttpServlet {
 
@@ -24,6 +27,13 @@ public class ServiceRequestServlet extends HttpServlet {
     private static final Set<String> ACTIONS =
             Set.of("accept", "decline", "complete", "cancel");
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -64,6 +74,13 @@ public class ServiceRequestServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -139,6 +156,14 @@ public class ServiceRequestServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Submits a request for an available service listing.
+     * @param request the HTTP request
+     * @param response the response
+     * @param user the user
+     * @throws IOException if an I/O operation fails
+     * @throws SQLException if the database operation fails
+     */
     private void createRequest(HttpServletRequest request,
                                HttpServletResponse response,
                                User user)
@@ -171,6 +196,11 @@ public class ServiceRequestServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Parses a numeric identifier from an HTTP parameter.
+     * @param value the value
+     * @return the parsed identifier
+     */
     private int parseId(String value) {
         try {
             int id = Integer.parseInt(value);
@@ -184,6 +214,11 @@ public class ServiceRequestServlet extends HttpServlet {
         throw new IllegalArgumentException("Invalid ID");
     }
 
+    /**
+     * Returns the user stored in the current session.
+     * @param request the HTTP request
+     * @return the result of the operation
+     */
     private User loggedInUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
@@ -196,6 +231,13 @@ public class ServiceRequestServlet extends HttpServlet {
         return user instanceof User ? (User) user : null;
     }
 
+    /**
+     * Redirects the browser to the appropriate application route.
+     * @param request the HTTP request
+     * @param response the response
+     * @param result the result
+     * @throws IOException if an I/O operation fails
+     */
     private void redirect(HttpServletRequest request,
                           HttpServletResponse response,
                           String result) throws IOException {

@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Handles browsing and searching service listings.
+ */
 @WebServlet(urlPatterns = {"", "/listings"})
 public class ListingsServlet extends HttpServlet {
 
@@ -22,6 +25,13 @@ public class ListingsServlet extends HttpServlet {
 
     private final JdbcListingDAO listingDAO = new JdbcListingDAO();
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)

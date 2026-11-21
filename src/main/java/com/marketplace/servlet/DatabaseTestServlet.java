@@ -13,9 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.marketplace.util.DatabaseConnection;
 
+/**
+ * Provides a diagnostic endpoint for checking database connectivity.
+ */
 @WebServlet("/db-test")
 public class DatabaseTestServlet extends HttpServlet {
 
+    /**
+     * Handles HTTP GET requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)

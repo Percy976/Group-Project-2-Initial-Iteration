@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * Processes changes to a user’s account profile.
+ */
 @WebServlet("/account/update")
 public class UpdateProfileServlet extends HttpServlet {
 
@@ -22,6 +25,13 @@ public class UpdateProfileServlet extends HttpServlet {
 
     private final JdbcUserDAO userDAO = new JdbcUserDAO();
 
+    /**
+     * Handles HTTP POST requests for this servlet.
+     * @param request the HTTP request
+     * @param response the response
+     * @throws ServletException if the servlet cannot complete the request
+     * @throws IOException if an I/O operation fails
+     */
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -148,6 +158,11 @@ public class UpdateProfileServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Returns trimmed input or an empty string for null values.
+     * @param value the value
+     * @return the result of the operation
+     */
     private String trimmed(String value) {
         return value == null ? "" : value.trim();
     }
