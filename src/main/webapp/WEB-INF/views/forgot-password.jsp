@@ -32,23 +32,9 @@
 
 <body>
 
-<header class="navbar">
-    <div class="container nav-content">
-
-        <a href="${pageContext.request.contextPath}/"
-           class="brand">
-            Local Services
-        </a>
-
-        <nav>
-            <a href="${pageContext.request.contextPath}/register"
-               class="btn btn-outline">
-                Sign Up
-            </a>
-        </nav>
-
-    </div>
-</header>
+<jsp:include page="/WEB-INF/views/components/navbar.jsp">
+    <jsp:param name="navHideLogin" value="true" />
+</jsp:include>
 
 <main class="container auth-main">
 

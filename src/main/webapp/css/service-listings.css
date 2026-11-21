@@ -25,7 +25,7 @@
 }
 
 /* Browse section */
-.browse-header { margin-top: 45px; }
+.browse-header { margin-top: 45px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .browse-header h2 { margin-bottom: 5px; font-size: 26px; }
 .browse-header p { margin-top: 0; color: #69727b; }
 

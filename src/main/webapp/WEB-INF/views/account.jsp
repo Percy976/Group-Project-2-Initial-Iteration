@@ -42,34 +42,7 @@
 
 <body>
 
-<header class="navbar">
-    <div class="container nav-content">
-
-        <a href="${pageContext.request.contextPath}/"
-           class="brand">
-            Local Services
-        </a>
-
-        <nav>
-            <a href="${pageContext.request.contextPath}/account">
-                My Account
-            </a>
-
-            <form method="post"
-                  action="${pageContext.request.contextPath}/logout">
-
-                <input type="hidden"
-                       name="csrfToken"
-                       value="<%= escapeHtml(
-                           session.getAttribute("csrfToken")) %>">
-
-                <button type="submit" class="btn btn-outline">
-                    Log Out
-                </button>
-            </form>
-        </nav>
-    </div>
-</header>
+<jsp:include page="/WEB-INF/views/components/navbar.jsp" />
 
 <main class="container account-main">
 

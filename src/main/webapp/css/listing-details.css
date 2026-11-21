@@ -208,12 +208,6 @@
     line-height: 1.3;
     cursor: pointer;
 }
-.reviews .review-actions .btn-primary { border: 1px solid #176345; background: #176345; color: #fff; }
-.reviews .review-actions .btn-primary:hover { background: #104b34; }
-.reviews .review-actions .btn-outline { border: 1px solid #176345; background: #fff; color: #176345; }
-.reviews .review-actions .btn-outline:hover { background: #edf6f1; }
-.reviews .review-actions .btn-danger { border: 1px solid #a51c1c; background: #fff; color: #a51c1c; }
-.reviews .review-actions .btn-danger:hover { background: #fff0f0; }
 
 .delete-form { display: none; }
 .review-feedback { padding: 12px; margin: 16px 0 20px; border-radius: 6px; }

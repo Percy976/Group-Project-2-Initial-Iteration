@@ -63,47 +63,7 @@
 
 <body>
 
-<header class="navbar">
-    <div class="container nav-content">
-
-        <a href="${pageContext.request.contextPath}/" class="brand">
-            Local Services
-        </a>
-
-        <nav>
-            <% if (currentUser != null) { %>
-
-                <a href="${pageContext.request.contextPath}/account">
-                    My Account
-                </a>
-
-                <form method="post"
-                      action="${pageContext.request.contextPath}/logout">
-
-                    <input type="hidden"
-                           name="csrfToken"
-                           value="<%= csrf %>">
-
-                    <button type="submit" class="btn btn-outline">
-                        Log Out
-                    </button>
-                </form>
-
-            <% } else { %>
-
-                <a href="${pageContext.request.contextPath}/login">
-                    Log In
-                </a>
-
-                <a href="${pageContext.request.contextPath}/register"
-                   class="btn btn-outline">
-                    Sign Up
-                </a>
-
-            <% } %>
-        </nav>
-    </div>
-</header>
+<jsp:include page="/WEB-INF/views/components/navbar.jsp" />
 
 <main class="container">
 

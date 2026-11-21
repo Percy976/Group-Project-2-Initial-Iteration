@@ -58,16 +58,6 @@
     margin: 0;
 }
 
-.btn-danger {
-    border: 1px solid #a51c1c;
-    background: white;
-    color: #a51c1c;
-}
-
-.btn-danger:hover {
-    background: #fff0f0;
-}
-
 /* Edit form */
 
 .listing-edit-form {
