@@ -232,6 +232,26 @@
                     </p>
 
                     <p>
+                        <strong>Email:</strong>
+                        <% if (item.getCustomerEmail() != null
+                                && !item.getCustomerEmail().isBlank()) { %>
+                            <a href="mailto:<%= esc(item.getCustomerEmail()) %>"><%= esc(item.getCustomerEmail()) %></a>
+                        <% } else { %>
+                            Not provided
+                        <% } %>
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        <% if (item.getCustomerPhone() != null
+                                && !item.getCustomerPhone().isBlank()) { %>
+                            <a href="tel:<%= esc(item.getCustomerPhone()) %>"><%= esc(item.getCustomerPhone()) %></a>
+                        <% } else { %>
+                            Not provided
+                        <% } %>
+                    </p>
+
+                    <p>
                         <strong>Request #:</strong>
                         <%= item.getRequestId() %>
                     </p>

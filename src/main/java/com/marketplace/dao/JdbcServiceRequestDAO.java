@@ -16,6 +16,8 @@ public class JdbcServiceRequestDAO {
         private int providerId;
         private String listingTitle;
         private String customerName;
+        private String customerEmail;
+        private String customerPhone;
         private String providerName;
         private String message;
         private String providerResponse;
@@ -29,6 +31,8 @@ public class JdbcServiceRequestDAO {
         public int getProviderId() { return providerId; }
         public String getListingTitle() { return listingTitle; }
         public String getCustomerName() { return customerName; }
+        public String getCustomerEmail() { return customerEmail; }
+        public String getCustomerPhone() { return customerPhone; }
         public String getProviderName() { return providerName; }
         public String getMessage() { return message; }
         public String getProviderResponse() { return providerResponse; }
@@ -68,7 +72,7 @@ public class JdbcServiceRequestDAO {
         return findRequests("""
             WHERE sr.customer_id = ?
             ORDER BY sr.requested_at DESC, sr.request_id DESC
-            """, customerId);
+            """, customerId, false);
     }
 
     public List<RequestRow> findByProvider(int providerId)
@@ -77,11 +81,18 @@ public class JdbcServiceRequestDAO {
         return findRequests("""
             WHERE l.provider_id = ?
             ORDER BY sr.requested_at DESC, sr.request_id DESC
-            """, providerId);
+            """, providerId, true);
     }
 
     private List<RequestRow> findRequests(
-            String condition, int userId) throws SQLException {
+            String condition, int userId,
+            boolean includeCustomerContact) throws SQLException {
+
+        // Customer contact details are retrieved only for requests
+        // addressed to a listing owned by the current user.
+        String customerContactColumns = includeCustomerContact
+                ? ", c.email AS customer_email, c.phone AS customer_phone\n"
+                : ", NULL AS customer_email, NULL AS customer_phone\n";
 
         String sql = """
             SELECT sr.request_id, sr.listing_id,
@@ -95,6 +106,7 @@ public class JdbcServiceRequestDAO {
                    sr.status, sr.requested_at,
                    CASE WHEN r.review_id IS NULL
                         THEN 0 ELSE 1 END AS reviewed
+            """ + customerContactColumns + """
             FROM service_requests sr
             JOIN listings l ON sr.listing_id = l.listing_id
             JOIN users c ON sr.customer_id = c.user_id
@@ -119,6 +131,8 @@ public class JdbcServiceRequestDAO {
                     row.providerId = rs.getInt("provider_id");
                     row.listingTitle = rs.getString("listing_title");
                     row.customerName = rs.getString("customer_name");
+                    row.customerEmail = rs.getString("customer_email");
+                    row.customerPhone = rs.getString("customer_phone");
                     row.providerName = rs.getString("provider_name");
                     row.message = rs.getString("message");
                     row.providerResponse =
