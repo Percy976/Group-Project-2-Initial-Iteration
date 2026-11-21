@@ -18,7 +18,38 @@ public class EmailService {
 
     public void sendPasswordReset(String recipientEmail, String token)
             throws MessagingException {
+        String baseUrl = envOrDefault(
+                "MARKETPLACE_BASE_URL", "http://localhost:8080/local-services-marketplace");
+        String resetLink = baseUrl.replaceAll("/+$", "")
+                + "/reset-password?token="
+                + URLEncoder.encode(token, StandardCharsets.UTF_8);
 
+        sendTextEmail(recipientEmail,
+                "Reset Your Local Services Marketplace Password",
+                "We received a request to reset your password.\n\n"
+                        + "Open this link to choose a new password:\n"
+                        + resetLink + "\n\n"
+                        + "This link expires in 30 minutes.\n\n"
+                        + "If you did not request a password reset, "
+                        + "you can ignore this email.");
+    }
+
+    /** Sends a welcome message after successful account registration. */
+    public void sendRegistrationConfirmation(String recipientEmail, String firstName)
+            throws MessagingException {
+        String greeting = firstName == null || firstName.isBlank()
+                ? "Hello" : "Hello " + firstName.trim();
+        sendTextEmail(recipientEmail,
+                "Welcome to Local Services Marketplace",
+                greeting + ",\n\n"
+                        + "Your Local Services Marketplace account has been created successfully.\n"
+                        + "You can now log in and start exploring local services.\n\n"
+                        + "If you did not create this account, please contact the marketplace administrator.\n\n"
+                        + "Local Services Marketplace");
+    }
+
+    private void sendTextEmail(String recipientEmail, String subject, String body)
+            throws MessagingException {
         // Zero-configuration development defaults: Mailpit's local SMTP port.
         String host = envOrDefault("MARKETPLACE_SMTP_HOST", "127.0.0.1");
         String port = envOrDefault("MARKETPLACE_SMTP_PORT", "1025");
@@ -57,23 +88,11 @@ public class EmailService {
             session = Session.getInstance(properties);
         }
 
-        String resetLink = baseUrl.replaceAll("/+$", "")
-                + "/reset-password?token="
-                + URLEncoder.encode(token, StandardCharsets.UTF_8);
-
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(sender));
-        message.setRecipient(Message.RecipientType.TO,
-                new InternetAddress(recipientEmail));
-        message.setSubject("Reset Your Local Services Marketplace Password", "UTF-8");
-        message.setText(
-                "We received a request to reset your password.\n\n"
-                        + "Open this link to choose a new password:\n"
-                        + resetLink + "\n\n"
-                        + "This link expires in 30 minutes.\n\n"
-                        + "If you did not request a password reset, "
-                        + "you can ignore this email.",
-                "UTF-8");
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
+        message.setSubject(subject, "UTF-8");
+        message.setText(body, "UTF-8");
         Transport.send(message);
     }
 

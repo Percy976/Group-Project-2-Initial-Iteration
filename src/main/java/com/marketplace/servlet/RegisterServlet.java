@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import com.marketplace.model.User;
 import com.marketplace.service.AuthService;
+import com.marketplace.service.EmailService;
+import jakarta.mail.MessagingException;
 
 /**
  * Displays and processes account registration.
@@ -23,6 +25,7 @@ public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final AuthService authService = new AuthService();
+    private final EmailService emailService = new EmailService();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -81,6 +84,16 @@ public class RegisterServlet extends HttpServlet {
 
         try {
             authService.register(user, password);
+
+            // Email delivery is best-effort: a Mailpit outage must not undo
+            // a successfully created account or cause duplicate registrations.
+            try {
+                emailService.sendRegistrationConfirmation(
+                        user.getEmail(), user.getFirstName());
+            } catch (MessagingException | IllegalStateException e) {
+                getServletContext().log(
+                        "Registration confirmation email could not be sent", e);
+            }
 
             session.setAttribute(
                     "csrfToken", UUID.randomUUID().toString());
